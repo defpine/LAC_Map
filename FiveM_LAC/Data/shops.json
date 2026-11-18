@@ -1,0 +1,16 @@
+{
+  "shops": [
+    {
+      "id": "shop_000001",
+      "type": "convenience",
+      "name": "24/7 편의점 (땅끝북부점)",
+      "description": "24/7 편의점입니다.",
+      "items": [
+        "플로우 생수",
+        "E-콜라 캔",
+        "그 외 10개"
+      ],
+      "customFields": []
+    }
+  ]
+}

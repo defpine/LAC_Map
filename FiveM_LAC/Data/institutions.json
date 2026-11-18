@@ -1,0 +1,39 @@
+{
+  "institutions": [
+    {
+      "id": "institution_000001",
+      "type": "institution",
+      "name": "LSPD 본부",
+      "description": "LSPD 본부",
+      "customFields": []
+    },
+    {
+      "id": "institution_000002",
+      "type": "institution",
+      "name": "LSPD 샌디 쇼어 고속도로 순찰대",
+      "description": "LSPD 샌디 쇼어 고속도로 순찰대",
+      "customFields": []
+    },
+    {
+      "id": "institution_000003",
+      "type": "institution",
+      "name": "LSPD 팔레토 베이 보안관 사무소",
+      "description": "LSPD 팔레토 베이 보안관 사무소",
+      "customFields": []
+    },
+    {
+      "id": "institution_000004",
+      "type": "institution",
+      "name": "LSPD 미션로우 지서",
+      "description": "LSPD 미션로우 지서",
+      "customFields": []
+    },
+    {
+      "id": "institution_000005",
+      "type": "institution",
+      "name": "LSPD 데이비스 지서",
+      "description": "LSPD 데이비스 지서",
+      "customFields": []
+    }
+  ]
+}

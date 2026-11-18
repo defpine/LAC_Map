@@ -1,0 +1,32 @@
+{
+  "name": "fivem-custom-map",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "tsc -b --pretty false",
+    "dev:viewer": "vite --mode viewer --open /viewer.html",
+    "prepare:viewer": "node scripts/restore-map-assets.mjs && node scripts/prepare-viewer.mjs",
+    "build:viewer": "npm run prepare:viewer && tsc -b && vite build --mode viewer && node scripts/finalize-viewer.mjs",
+    "preview:viewer": "vite preview --mode viewer",
+    "check:viewer": "node scripts/check-viewer.mjs"
+  },
+  "dependencies": {
+    "@geoman-io/leaflet-geoman-free": "^2.18.0",
+    "leaflet": "^1.9.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.16",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}

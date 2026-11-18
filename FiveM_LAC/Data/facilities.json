@@ -1,0 +1,15 @@
+{
+  "facilities": [
+    {
+      "id": "facility_000001",
+      "type": "bus_stop",
+      "name": "북부 고속버스 터미널",
+      "description": "도시와 외곽을 잇는 고속버스가 서는 곳. 차가 없어도 먼 길을 갈 수 있다.",
+      "location": {
+        "type": "building",
+        "buildingRef": "building_000013"
+      },
+      "customFields": []
+    }
+  ]
+}

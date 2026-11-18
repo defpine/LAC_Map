@@ -1,0 +1,20 @@
+{
+  "projectName": "Los Santos Custom Map",
+  "projectVersion": "0.1.0",
+  "schemaVersion": 1,
+  "currentMapImageRef": "map_000001",
+  "mapImages": [
+    {
+      "id": "map_000001",
+      "originalFileName": "LosSantos_Navy.png",
+      "filePath": "Assets/images/maps/map_000001.png",
+      "previewFilePath": "Assets/images/maps/map_000001_preview.jpg",
+      "tileDirectory": "Assets/images/maps/tiles/map_000001",
+      "format": "png",
+      "fileSize": 19070214,
+      "width": 8192,
+      "height": 12288,
+      "registeredAt": "2026-11-16T00:00:00.000Z"
+    }
+  ]
+}

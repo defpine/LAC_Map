@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+dist-viewer/
+public-viewer/
+FiveM_LAC/Backup/
+
+/FiveM_LAC/Assets/images/maps/map_000001.png

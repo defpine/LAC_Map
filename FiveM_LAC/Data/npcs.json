@@ -1,0 +1,20 @@
+{
+  "npcs": [
+    {
+      "id": "npc_000001",
+      "type": "npc",
+      "name": "에이미",
+      "description": "우리 모두의 친구, 에이미.",
+      "quests": [
+        "에이미의 부탁",
+        "이동수단 그 이상의 것",
+        "진정한 나 자신을 가꾸는 법"
+      ],
+      "location": {
+        "type": "free_text",
+        "text": "만남의 광장 중앙"
+      },
+      "customFields": []
+    }
+  ]
+}
