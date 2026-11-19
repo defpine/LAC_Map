@@ -46,6 +46,7 @@ export function App() {
   const [draftBurglary, setDraftBurglary] = useState(false);
   const [draftPurchasable, setDraftPurchasable] = useState(false);
   const [draftPostalCode, setDraftPostalCode] = useState("");
+  const [draftIconRef, setDraftIconRef] = useState("");
   const [entranceTarget, setEntranceTarget] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [visibleEntranceUnit, setVisibleEntranceUnit] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -220,6 +221,7 @@ export function App() {
     setDraftBurglary(selection?.kind === "building" && Boolean(selection.feature.isBurglaryTarget));
     setDraftPurchasable(selection?.kind === "building" && Boolean(selection.feature.isPurchasable));
     setDraftPostalCode(selection?.kind === "building" ? selection.feature.postalCode ?? "" : "");
+    setDraftIconRef(selection?.kind === "building" || selection?.kind === "marker" ? selection.feature.iconRef ?? "" : "");
     setDeleteConfirm(false);
   }, [selection]);
   useEffect(() => {
@@ -301,6 +303,9 @@ export function App() {
     setFolderError(null);
     try {
       await saveProjectData(projectRoot, project);
+      const savedProject = { ...project, icons: project.icons?.map(({ pendingFile: _file, ...icon }) => icon) };
+      projectRef.current = savedProject;
+      setProject(savedProject);
       setDirty(false);
       setUndoStack([]);
       setRedoStack([]);
@@ -328,17 +333,43 @@ export function App() {
       setSelection({ kind: "road", feature });
     } else if (selection.kind === "building") {
       const postalCode = draftPostalCode.trim() || undefined;
-      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined };
+      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined };
       commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "building", feature });
     } else {
       const color = isHexColor(draftMarkerColor) ? draftMarkerColor.toUpperCase() : undefined;
       const type = draftType as MarkerType;
-      const feature: MapMarker = { ...selection.feature, name, type, size: clampInteger(draftMarkerSize, 20, 48, selection.feature.size ?? 24), color, shopType: type === "shop" ? draftMarkerShopType : undefined };
+      const feature: MapMarker = { ...selection.feature, name, type, size: clampInteger(draftMarkerSize, 20, 48, selection.feature.size ?? 24), color, iconRef: draftIconRef || undefined, shopType: type === "shop" ? draftMarkerShopType : undefined };
       commitProject((current) => ({ ...current, markers: current.markers.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "marker", feature });
     }
     setDirty(true);
+  };
+  const registerIcon = async (file: File) => {
+    try {
+      if (!projectRoot) throw new Error("아이콘을 등록하려면 먼저 프로젝트 폴더를 연결하세요.");
+      if (file.size === 0 || file.size > 10 * 1024 * 1024) throw new Error("이미지는 10MB 이하의 비어 있지 않은 파일이어야 합니다.");
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const signature = Array.from(bytes.slice(0, 12));
+      const png = [137, 80, 78, 71, 13, 10, 26, 10].every((value, index) => signature[index] === value);
+      const jpg = signature[0] === 255 && signature[1] === 216 && signature[2] === 255;
+      const webp = String.fromCharCode(...signature.slice(0, 4)) === "RIFF" && String.fromCharCode(...signature.slice(8, 12)) === "WEBP";
+      if (!png && !jpg && !webp) throw new Error("PNG, JPG, WebP 이미지만 등록할 수 있습니다.");
+      const text = new TextDecoder("latin1").decode(bytes);
+      if ((png && text.includes("acTL")) || (webp && text.includes("ANIM"))) throw new Error("애니메이션 이미지는 지원하지 않습니다.");
+      const bitmap = await createImageBitmap(file);
+      bitmap.close();
+      const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      const current = projectRef.current;
+      const duplicate = current.icons?.find((icon) => icon.sha256 === hash);
+      if (duplicate) { setDraftIconRef(duplicate.id); return; }
+      const id = nextId(current.icons ?? [], "image");
+      const format = png ? "png" : jpg ? "jpg" : "webp";
+      const icon = { id, originalFileName: file.name, filePath: `Assets/images/icons/${id}.${format}`, format, fileSize: file.size, sha256: hash, url: URL.createObjectURL(file), pendingFile: file } as const;
+      commitProject((value) => ({ ...value, icons: [...(value.icons ?? []), icon] }));
+      setDraftIconRef(id);
+      setDirty(true);
+    } catch (error) { setFolderError(error instanceof Error ? error.message : "아이콘을 등록하지 못했습니다."); }
   };
   const deleteSelected = () => {
     if (!selection) return;
@@ -418,7 +449,7 @@ export function App() {
           <MapLegend open={legendOpen} onToggle={() => setLegendOpen((open) => !open)} />
           {selection && <aside className="detail-card" role="dialog" aria-label="선택한 객체 정보">
             <button className="detail-close" onClick={() => setSelection(null)} aria-label="닫기">×</button>
-            <div className={`feature-chip ${selection.kind}`} style={{ backgroundColor: featureChipColor(selection) }} />
+            <div className={`feature-chip ${selection.kind}`} style={{ backgroundColor: featureChipColor(selection) }}>{(selection.kind === "building" || selection.kind === "marker") && (() => { const icon = project.icons?.find((item) => item.id === selection.feature.iconRef); return icon?.url ? <img className="feature-icon-image" src={icon.url} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null; })()}</div>
             <p className="eyebrow">{kindLabel(selection.kind, selection.feature.type)}{!editorMode && linkedSelectionDetail && selection.kind === "marker" && selection.feature.type === "shop" ? ` · ${detailTypeLabel(linkedSelectionDetail.type)}` : ""}</p>
             <h2>{editorMode ? selectedTitle : linkedSelectionDetail?.name || selection.feature.name || "이름 없음"}</h2>
             {editorMode && <p className="feature-id">{selection.feature.id}</p>}
@@ -444,6 +475,7 @@ export function App() {
                 <label>크기 (20–48)<input type="number" min="20" max="48" value={draftMarkerSize} onChange={(event) => setDraftMarkerSize(event.target.value)} /></label>
                 <label>사용자 색상 (선택)<input value={draftMarkerColor} onChange={(event) => setDraftMarkerColor(event.target.value)} placeholder="#RRGGBB · 비워두면 종류 기본색" /></label>
               </>}
+              {(selection.kind === "building" || selection.kind === "marker") && <><label>전용 아이콘<select value={draftIconRef} onChange={(event) => setDraftIconRef(event.target.value)}><option value="">없음 · 기본 색상 사용</option>{(project.icons ?? []).map((icon) => <option key={icon.id} value={icon.id}>{icon.originalFileName}</option>)}</select></label><label>아이콘 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file); }} /></label><small>PNG, JPG, WebP · 최대 10MB · 애니메이션 제외</small></>}
               <div className="inspector-actions"><button className="save-property" onClick={saveSelectedProperties}>속성 Save</button><button className="delete-property" onClick={() => setDeleteConfirm(true)}>Delete</button></div>
               {selection.kind === "building" && selection.feature.type === "residence" && <ResidenceUnitsEditor building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} onAddUnit={addResidenceUnit} onUpdateUnit={updateResidenceUnit} onDeleteUnit={deleteResidenceUnit} onAddEntrance={(unitId) => { setVisibleEntranceUnit({ buildingId: selection.feature.id, unitId }); setEntranceTarget({ buildingId: selection.feature.id, unitId }); setDrawKind("entrance"); }} onDeleteEntrance={deleteEntrance} />}
             </div>}
@@ -708,4 +740,3 @@ function validateResidenceEntrances(project: MapProject): string | null {
   const invalid = project.buildings.find((building) => building.type === "residence" && building.isBurglaryTarget && (!(building.units?.length) || building.units.some((unit) => unit.entrances.length === 0)));
   return invalid ? `절도 대상 주거 건물 “${invalid.name ?? invalid.id}”의 모든 유닛에는 출입구가 최소 1개 필요합니다.` : null;
 }
-

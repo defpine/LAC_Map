@@ -9,6 +9,7 @@ interface FileSystemDirectoryHandle {
   readonly name: string;
   getDirectoryHandle(name: string, options?: { create?: boolean }): Promise<FileSystemDirectoryHandle>;
   getFileHandle(name: string, options?: { create?: boolean }): Promise<FileSystemFileHandle>;
+  removeEntry(name: string): Promise<void>;
 }
 
 interface FileSystemFileHandle {
@@ -17,6 +18,6 @@ interface FileSystemFileHandle {
 }
 
 interface FileSystemWritableFileStream {
-  write(data: string): Promise<void>;
+  write(data: string | Blob): Promise<void>;
   close(): Promise<void>;
 }

@@ -43,6 +43,7 @@ export type Road = {
 
 export type Building = {
   color?: string;
+  iconRef?: string;
   id: string;
   type: BuildingType;
   name?: string;
@@ -83,8 +84,20 @@ export type Facility = { id: string; type: FacilityType; name?: string; descript
 
 export type MapTileProvider = (level: number, x: number, y: number) => Promise<string | null>;
 
+export type ProjectIcon = {
+  id: string;
+  originalFileName: string;
+  filePath: string;
+  format: "png" | "jpg" | "webp";
+  fileSize: number;
+  sha256: string;
+  url?: string;
+  pendingFile?: File;
+};
+
 export type MapProject = {
   projectName: string;
+  icons?: ProjectIcon[];
   image: { url: string; previewUrl?: string; tileUrlTemplate?: string; tileProvider?: MapTileProvider; width: number; height: number };
   terrain: Terrain[];
   zones: Zone[];

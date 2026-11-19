@@ -8,6 +8,8 @@ const schemas = await import(`data:text/javascript;base64,${Buffer.from(compiled
 for (const name of ['project','geography','buildings','markers','institutions','shops','npcs','facilities']) {
   schemas[`${name}FileSchema`].parse(JSON.parse(await readFile(`dist-viewer/Data/${name}.json`, 'utf8')));
 }
+const iconData = schemas.iconsFileSchema.parse(JSON.parse(await readFile('dist-viewer/Data/images.json', 'utf8')));
+for (const icon of iconData.images) await access(path.join('dist-viewer', icon.filePath));
 const root = path.resolve('dist-viewer');
 const html = await readFile(path.join(root, 'index.html'), 'utf8');
 assert(!html.includes('/src/'), 'Source entry leaked');

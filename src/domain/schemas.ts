@@ -29,7 +29,7 @@ export const geographyFileSchema = z.object({
 export const buildingsFileSchema = z.object({
   buildings: z.array(z.object({
     id: z.string(), type: z.enum(["institution", "shop", "residence", "other"]), name: z.string().optional(),
-    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
   }).passthrough()),
 });
 
@@ -40,6 +40,15 @@ export const markersFileSchema = z.object({
     iconRef: z.string().optional(), entityRef: z.string().optional(), shopType: z.enum(["clothing", "convenience", "restaurant", "bar", "club", "street_vendor", "gun_store", "car_dealership", "jewelry_store", "premium_shop"]).optional(), geometry: pointGeometry,
   }).passthrough()),
 });
+
+export const iconsFileSchema = z.object({ images: z.array(z.object({
+  id: z.string().regex(/^image_\d{6}$/),
+  originalFileName: z.string().min(1),
+  filePath: z.string().regex(/^Assets\/images\/icons\/image_\d{6}\.(png|jpg|webp)$/),
+  format: z.enum(["png", "jpg", "webp"]),
+  fileSize: z.number().int().positive().max(10 * 1024 * 1024),
+  sha256: z.string().regex(/^[0-9a-f]{64}$/),
+}).passthrough()) }).passthrough();
 
 export const institutionsFileSchema = z.object({ institutions: z.array(z.object({ id: z.string(), type: z.literal("institution").default("institution"), name: z.string().optional(), description: z.string().optional(), customFields }).passthrough()) });
 export const shopsFileSchema = z.object({ shops: z.array(z.object({ id: z.string(), type: z.enum(["clothing", "convenience", "restaurant", "bar", "club", "street_vendor", "gun_store", "car_dealership", "jewelry_store", "premium_shop"]), name: z.string().optional(), description: z.string().optional(), items: z.array(z.string()).optional(), customFields }).passthrough()) });

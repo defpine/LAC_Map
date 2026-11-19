@@ -1,10 +1,10 @@
 import { ZodError } from "zod";
-import { buildingsFileSchema, facilitiesFileSchema, geographyFileSchema, institutionsFileSchema, markersFileSchema, npcsFileSchema, projectFileSchema, shopsFileSchema } from "../domain/schemas";
+import { buildingsFileSchema, facilitiesFileSchema, geographyFileSchema, iconsFileSchema, institutionsFileSchema, markersFileSchema, npcsFileSchema, projectFileSchema, shopsFileSchema } from "../domain/schemas";
 import type { MapProject } from "../domain/types";
 
 export async function loadMapProject(root: FileSystemDirectoryHandle): Promise<MapProject> {
   const data = await root.getDirectoryHandle("Data");
-  const [projectData, geographyData, buildingsData, markersData, institutionsData, shopsData, npcsData, facilitiesData] = await Promise.all([
+  const [projectData, geographyData, buildingsData, markersData, institutionsData, shopsData, npcsData, facilitiesData, iconData] = await Promise.all([
     readJson(data, "project.json", projectFileSchema),
     readJson(data, "geography.json", geographyFileSchema),
     readJson(data, "buildings.json", buildingsFileSchema),
@@ -13,6 +13,7 @@ export async function loadMapProject(root: FileSystemDirectoryHandle): Promise<M
     readJson(data, "shops.json", shopsFileSchema),
     readJson(data, "npcs.json", npcsFileSchema),
     readJson(data, "facilities.json", facilitiesFileSchema),
+    readJson(data, "images.json", iconsFileSchema),
   ]);
   const mapImage = projectData.mapImages.find((image) => image.id === projectData.currentMapImageRef);
   if (!mapImage) throw new Error("project.json의 currentMapImageRef가 mapImages에 없습니다.");
@@ -21,6 +22,10 @@ export async function loadMapProject(root: FileSystemDirectoryHandle): Promise<M
   const previewFile = mapImage.previewFilePath ? await fileAtPath(root, mapImage.previewFilePath) : undefined;
   return {
     projectName: projectData.projectName,
+    icons: await Promise.all(iconData.images.map(async (icon) => {
+      try { return { ...icon, url: URL.createObjectURL(await fileAtPath(root, icon.filePath)) }; }
+      catch { return icon; }
+    })),
     image: {
       url: URL.createObjectURL(imageFile),
       previewUrl: previewFile ? URL.createObjectURL(previewFile) : undefined,

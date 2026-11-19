@@ -1,4 +1,44 @@
 {
-  "images": []
+  "images": [
+    {
+      "id": "image_000001",
+      "originalFileName": "Convenience_Green.png",
+      "filePath": "Assets/images/icons/image_000001.png",
+      "format": "png",
+      "fileSize": 4691,
+      "sha256": "161a46728368807b1a1a040fa904340bb398404ac8a31e980f3f3be3e8e9aa0e"
+    },
+    {
+      "id": "image_000002",
+      "originalFileName": "Convenience_Red.png",
+      "filePath": "Assets/images/icons/image_000002.png",
+      "format": "png",
+      "fileSize": 4552,
+      "sha256": "9f4f06b647041d7c5abe2f9213974034d61dd53405d79d7cfa9c5580e5558ce8"
+    },
+    {
+      "id": "image_000003",
+      "originalFileName": "Oil_Station.png",
+      "filePath": "Assets/images/icons/image_000003.png",
+      "format": "png",
+      "fileSize": 3240,
+      "sha256": "db44b51d1d71abdb1de7caf35a592767118ac80d61dd88047e50fd3090637d28"
+    },
+    {
+      "id": "image_000004",
+      "originalFileName": "Bus.png",
+      "filePath": "Assets/images/icons/image_000004.png",
+      "format": "png",
+      "fileSize": 4581,
+      "sha256": "95107026b85e5bcb909653899cfb4296132324f31196910eba8d0a5d6191d789"
+    },
+    {
+      "id": "image_000005",
+      "originalFileName": "Police_Blue.png",
+      "filePath": "Assets/images/icons/image_000005.png",
+      "format": "png",
+      "fileSize": 4697,
+      "sha256": "99acc2f28df41fb06ce12a6de0c4156f32b2441bbb72d680a8322c7ae683e456"
+    }
+  ]
 }
-

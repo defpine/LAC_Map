@@ -13,16 +13,16 @@ async function read<T>(name: string, schema: { parse(value: unknown): T }, signa
 }
 export async function loadProject(signal: AbortSignal): Promise<MapProject> {
   const version = Date.now().toString();
-  const [project, geography, buildings, markers, institutions, shops, npcs, facilities] = await Promise.all([
+  const [project, geography, buildings, markers, institutions, shops, npcs, facilities, iconData] = await Promise.all([
     read("project", schemas.projectFileSchema, signal, version), read("geography", schemas.geographyFileSchema, signal, version),
     read("buildings", schemas.buildingsFileSchema, signal, version), read("markers", schemas.markersFileSchema, signal, version),
     read("institutions", schemas.institutionsFileSchema, signal, version), read("shops", schemas.shopsFileSchema, signal, version),
     read("npcs", schemas.npcsFileSchema, signal, version), read("facilities", schemas.facilitiesFileSchema, signal, version),
+    read("images", schemas.iconsFileSchema, signal, version),
   ]);
   const image = project.mapImages.find(item => item.id === project.currentMapImageRef);
   if (!image) throw new Error("선택한 지도 이미지가 없습니다.");
-  return { projectName: project.projectName, ...geography, ...buildings, ...markers, ...institutions, ...shops, ...npcs, ...facilities,
+  return { projectName: project.projectName, icons: iconData.images.map(icon => ({ ...icon, url: `${assetUrl(icon.filePath)}?v=${encodeURIComponent(version)}` })), ...geography, ...buildings, ...markers, ...institutions, ...shops, ...npcs, ...facilities,
     image: { width: image.width, height: image.height, url: assetUrl(image.filePath), previewUrl: image.previewFilePath ? assetUrl(image.previewFilePath) : undefined,
       tileUrlTemplate: image.tileDirectory ? assetUrl(`${image.tileDirectory}/level_{level}/{x}_{y}.png`) : undefined } };
 }
-

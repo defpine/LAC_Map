@@ -241,7 +241,9 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
         if (!visible.marker[feature.type]) return;
         const [x, y] = feature.geometry.coordinates;
         const color = feature.color ?? markerColors[feature.type];
-        const marker = L.marker([y * height, x * width], { icon: pinIcon(color, feature.name, feature.size ?? 24, isSelected("marker", feature.id)), keyboard: true });
+        const iconUrl = project.icons?.find((icon) => icon.id === feature.iconRef)?.url;
+        const marker = L.marker([y * height, x * width], { icon: pinIcon(color, feature.name, feature.size ?? 24, isSelected("marker", feature.id), iconUrl), keyboard: true });
+        marker.on("add", () => { const image = marker.getElement()?.querySelector("img"); if (image) { const fallback = () => image.remove(); image.addEventListener("error", fallback, { once: true }); if (image.complete && !image.naturalWidth) fallback(); } });
         marker.addTo(layers);
         bindFeatureLayer(marker as EditableLayer, "marker", feature);
       });
@@ -324,12 +326,12 @@ function normalizedGeometry(layer: L.Layer, width: number, height: number): Draw
   return null;
 }
 
-function pinIcon(color: string, name: string | undefined, size: number, selected = false): L.DivIcon {
+function pinIcon(color: string, name: string | undefined, size: number, selected = false, iconUrl?: string): L.DivIcon {
   return L.divIcon({
     className: "custom-pin-shell",
     iconSize: [44, 44],
     iconAnchor: [22, 41],
-    html: `<div class="custom-pin${selected ? " selected" : ""}" style="--pin-color:${color};--pin-size:${size}px" title="${escapeHtml(name ?? "마커")}"><span></span></div>`,
+    html: `<div class="custom-pin${selected ? " selected" : ""}" style="--pin-color:${color};--pin-size:${size}px" title="${escapeHtml(name ?? "마커")}"><span>${iconUrl ? `<img src="${escapeHtml(iconUrl)}" alt="" />` : ""}</span></div>`,
   });
 }
 
@@ -350,4 +352,3 @@ function darken(hex: string): string {
   const channel = (shift: number) => Math.round(((value >> shift) & 0xff) * 0.75).toString(16).padStart(2, "0");
   return `#${channel(16)}${channel(8)}${channel(0)}`;
 }
-
