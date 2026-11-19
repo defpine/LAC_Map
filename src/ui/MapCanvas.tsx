@@ -168,9 +168,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     activeEditLayerRef.current?.pm.disable();
     activeEditLayerRef.current = null;
     const { width, height } = project.image;
-    // Yellow is reserved for a result chosen from search. Normal selection is
-    // used for editing and should retain each feature's own visual style.
-    const isSelected = (kind: SelectedFeature["kind"], id: string) => focusTarget?.kind === kind && focusTarget.feature.id === id;
+    const isSelected = (kind: SelectedFeature["kind"], id: string) => selection?.kind === kind && selection.feature.id === id;
     const enableGeometryEdit = (layer: EditableLayer) => {
       if (!editorMode || drawKind) return;
       if (activeEditLayerRef.current && activeEditLayerRef.current !== layer) activeEditLayerRef.current.pm.disable();
@@ -186,10 +184,10 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
         if (drawKind) return;
         L.DomEvent.stopPropagation(event);
         onSelect({ kind, feature } as SelectedFeature);
-        enableGeometryEdit(layer);
       });
       layer.on("pm:edit", () => persistGeometry(kind, feature.id, layer));
       if (kind === "marker") layer.on("pm:dragend", () => persistGeometry(kind, feature.id, layer));
+      if (selection?.kind === kind && selection.feature.id === feature.id) enableGeometryEdit(layer);
       return layer;
     };
 
@@ -197,7 +195,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
       project.zones.forEach((feature) => {
         const selected = isSelected("zone", feature.id);
         L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
-          color: selected ? "#FACC15" : darken(zoneColors[feature.type]), weight: selected ? 3 : 1, fillColor: zoneColors[feature.type], fillOpacity: selected ? 0.32 : 0.2,
+          color: selected ? "#FFFFFF" : darken(zoneColors[feature.type]), weight: selected ? 3 : 1, fillColor: zoneColors[feature.type], fillOpacity: selected ? 0.32 : 0.2,
         }).addTo(layers);
         bindFeatureLayer(layers.getLayers().at(-1)! as EditableLayer, "zone", feature);
       });
@@ -207,7 +205,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
         if (!visible.terrain[feature.type]) return;
         const selected = isSelected("terrain", feature.id);
         L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
-          color: selected ? "#FACC15" : darken(terrainColors[feature.type]), weight: selected ? 3 : 1, fillColor: terrainColors[feature.type], fillOpacity: selected ? 0.4 : feature.type === "city" ? 0.25 : 0.3,
+          color: selected ? "#FFFFFF" : darken(terrainColors[feature.type]), weight: selected ? 3 : 1, fillColor: terrainColors[feature.type], fillOpacity: selected ? 0.4 : feature.type === "city" ? 0.25 : 0.3,
         }).addTo(layers);
         bindFeatureLayer(layers.getLayers().at(-1)! as EditableLayer, "terrain", feature);
       });
@@ -217,9 +215,10 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
         const style = roadStyles[feature.type];
         const selected = isSelected("road", feature.id);
         L.polyline(linePositions(feature.geometry.coordinates, width, height), {
-          color: selected ? "#FACC15" : feature.color ?? style.color, weight: selected ? Math.max(6, feature.width / 4 + 3) : Math.max(4, feature.width / 4), opacity: 0.9,
+          color: feature.color ?? style.color, weight: Math.max(4, feature.width / 4), opacity: 0.9,
         }).addTo(layers);
         bindFeatureLayer(layers.getLayers().at(-1)! as EditableLayer, "road", feature);
+        if (selected) L.polyline(linePositions(feature.geometry.coordinates, width, height), { color: "#FFFFFF", weight: 5, dashArray: "0 10", lineCap: "round", interactive: false, pmIgnore: true }).addTo(layers);
       });
     }
     if (visible.building) {
@@ -228,7 +227,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
         const color = feature.color ?? buildingColors[feature.type];
         const selected = isSelected("building", feature.id);
         const buildingLayer = L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
-          color: selected ? "#FACC15" : feature.isBurglaryTarget ? "#DC2626" : darken(color), dashArray: selected ? undefined : feature.isBurglaryTarget ? "5 4" : undefined,
+          color: selected ? "#FFFFFF" : feature.isBurglaryTarget ? "#DC2626" : darken(color), dashArray: selected ? undefined : feature.isBurglaryTarget ? "5 4" : undefined,
           weight: selected ? 3 : feature.isBurglaryTarget ? 2 : 1, fillColor: color, fillOpacity: selected ? 0.38 : feature.type === "other" ? 0.18 : 0.22,
         }).addTo(layers);
         bindFeatureLayer(buildingLayer as EditableLayer, "building", feature);
@@ -351,3 +350,4 @@ function darken(hex: string): string {
   const channel = (shift: number) => Math.round(((value >> shift) & 0xff) * 0.75).toString(16).padStart(2, "0");
   return `#${channel(16)}${channel(8)}${channel(0)}`;
 }
+

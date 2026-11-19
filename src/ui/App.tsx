@@ -413,15 +413,15 @@ export function App() {
           <MapCanvas project={project} visible={visibility} selection={selection} focusTarget={searchFocus} onSelect={onSelect} drawKind={editorMode ? drawKind : null} onDrawn={createFeature} editorMode={editorMode} onGeometryEdited={updateGeometry} onEntranceMoved={updateEntrance} visibleEntranceUnit={visibleEntranceUnit} />
           <div className="map-search">
             <input aria-label="지도 검색" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="이름 · ID · 우편번호 검색" />
-            {searchQuery.trim() && <div className="search-results">{searchResults.length > 0 ? searchResults.map((result) => <button type="button" key={`${result.kind}-${result.feature.id}`} onClick={() => { setSelection(result); setSearchFocus(result); setSearchQuery(""); }}><strong>{result.feature.name ?? result.feature.id}</strong><small>{kindLabel(result.kind, result.feature.type)} · {result.feature.id}{result.kind === "building" && result.feature.postalCode ? ` · ${result.feature.postalCode}` : ""}</small></button>) : <p>일치하는 객체가 없습니다.</p>}</div>}
+            {searchQuery.trim() && <div className="search-results">{searchResults.length > 0 ? searchResults.map((result) => <button type="button" key={`${result.kind}-${result.feature.id}`} onClick={() => { setSelection(result); setSearchFocus(result); setSearchQuery(""); }}><strong>{result.feature.name || (editorMode ? result.feature.id : "이름 없음")}</strong><small>{kindLabel(result.kind, result.feature.type)}{editorMode ? ` · ${result.feature.id}` : ""}{result.kind === "building" && result.feature.postalCode ? ` · ${result.feature.postalCode}` : ""}</small></button>) : <p>일치하는 객체가 없습니다.</p>}</div>}
           </div>
           <MapLegend open={legendOpen} onToggle={() => setLegendOpen((open) => !open)} />
           {selection && <aside className="detail-card" role="dialog" aria-label="선택한 객체 정보">
             <button className="detail-close" onClick={() => setSelection(null)} aria-label="닫기">×</button>
             <div className={`feature-chip ${selection.kind}`} style={{ backgroundColor: featureChipColor(selection) }} />
-            <p className="eyebrow">{!editorMode && linkedSelectionDetail ? `상세 데이터 · ${detailTypeLabel(linkedSelectionDetail.type)}` : kindLabel(selection.kind, selection.feature.type)}</p>
-            <h2>{!editorMode && linkedSelectionDetail ? linkedSelectionDetail.name ?? linkedSelectionDetail.id : selectedTitle}</h2>
-            <p className="feature-id">{!editorMode && linkedSelectionDetail ? linkedSelectionDetail.id : selection.feature.id}</p>
+            <p className="eyebrow">{kindLabel(selection.kind, selection.feature.type)}{!editorMode && linkedSelectionDetail && selection.kind === "marker" && selection.feature.type === "shop" ? ` · ${detailTypeLabel(linkedSelectionDetail.type)}` : ""}</p>
+            <h2>{editorMode ? selectedTitle : linkedSelectionDetail?.name || selection.feature.name || "이름 없음"}</h2>
+            {editorMode && <p className="feature-id">{selection.feature.id}</p>}
             {!editorMode && selection.kind === "building" && selection.feature.type === "residence" && <ViewerResidenceUnits building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} />}
             {!editorMode && selection.kind === "building" && <ViewerBuildingInfo building={selection.feature} />}
             {!editorMode && linkedSelectionDetail && <DetailPopupContent detail={linkedSelectionDetail} />}
@@ -605,7 +605,8 @@ function removeFeature(project: MapProject, kind: SelectedFeature["kind"], id: s
 
 function kindLabel(kind: SelectedFeature["kind"], type: TerrainType | ZoneType | RoadType | BuildingType | MarkerType): string {
   const labels: Record<string, string> = { terrain: "지형", zone: "구역", road: "도로", building: "건물", marker: "마커" };
-  return `${labels[kind]} · ${type}`;
+  const typeLabel = typeOptions(kind).find((option) => option.value === type)?.label ?? type;
+  return `${labels[kind]} · ${typeLabel}`;
 }
 
 function typeOptions(kind: SelectedFeature["kind"]): { value: string; label: string }[] {
@@ -707,3 +708,4 @@ function validateResidenceEntrances(project: MapProject): string | null {
   const invalid = project.buildings.find((building) => building.type === "residence" && building.isBurglaryTarget && (!(building.units?.length) || building.units.some((unit) => unit.entrances.length === 0)));
   return invalid ? `절도 대상 주거 건물 “${invalid.name ?? invalid.id}”의 모든 유닛에는 출입구가 최소 1개 필요합니다.` : null;
 }
+
