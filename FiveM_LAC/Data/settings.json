@@ -1,0 +1,15 @@
+{
+  "markerDefaults": {
+    "size": 24,
+    "minSize": 20,
+    "maxSize": 48,
+    "outlineColor": "#3A3A3A"
+  },
+  "roadDefaults": {
+    "minWidth": 4,
+    "maxWidth": 100,
+    "hoverWidthMultiplier": 1.15,
+    "hoverDarkenPercent": 15
+  }
+}
+

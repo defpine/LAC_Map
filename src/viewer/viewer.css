@@ -5,6 +5,7 @@
 .public-viewer nav { display:flex; gap:8px; }.public-viewer button:hover { background:#39495f; }
 .viewer-map { flex:1; position:relative; min-height:0; }.viewer-map .map-canvas { position:absolute; inset:0; }
 .viewer-feature-title { display:flex; align-items:center; gap:12px; min-width:0; margin-bottom:12px; }.viewer-feature-title .feature-chip { flex:none; margin:0; }.viewer-panel-heading .viewer-feature-title h2 { margin:0; }
+.public-viewer .viewer-panel-heading > button { flex:none; border:0; background:transparent; padding:2px 6px; font-size:24px; line-height:1; }.public-viewer .viewer-panel-heading > button:hover { background:transparent; color:#cbd5e1; }
 .viewer-search { position:absolute; z-index:1100; top:12px; left:50%; transform:translateX(-50%); width:min(440px,calc(100% - 24px)); display:flex; background:#171a1f; border:1px solid #64748b; border-radius:8px; }
 .viewer-search input { width:100%; min-width:0; background:transparent; color:#fff; padding:12px; border:0; font:inherit; }.viewer-search > button { border:0; }
 .viewer-results { position:absolute; top:100%; width:100%; max-height:45dvh; overflow:auto; background:#171a1f; border:1px solid #64748b; }.viewer-results button { display:grid; gap:4px; text-align:left; width:100%; border-radius:0; }.viewer-results p { padding:12px; }
