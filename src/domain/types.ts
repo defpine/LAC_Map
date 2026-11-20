@@ -69,6 +69,7 @@ export type MapMarker = {
   color?: string;
   size?: number;
   iconRef?: string;
+  bannerRef?: string;
   entityRef?: string;
   shopType?: ShopType;
 };
@@ -109,3 +110,4 @@ export type MapProject = {
   npcs: Npc[];
   facilities: Facility[];
 };
+

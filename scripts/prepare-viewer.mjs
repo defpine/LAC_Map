@@ -27,8 +27,10 @@ await cp('public/assets/fonts', path.join(target, 'assets/fonts'), { recursive: 
 await mkdir(path.join(target, 'Assets/images/icons'), { recursive: true });
 const icons = JSON.parse(await readFile(path.join(root, 'Data/images.json'), 'utf8'));
 for (const icon of icons.images) {
-  if (!/^Assets\/images\/icons\/image_\d{6}\.(png|jpg|webp)$/.test(icon.filePath)) throw new Error('Invalid icon path');
+  if (!/^Assets\/images\/(icons|banners)\/image_\d{6}\.(png|jpg|webp)$/.test(icon.filePath)) throw new Error('Invalid image path');
+  await mkdir(path.dirname(path.join(target, icon.filePath)), { recursive: true });
   await cp(path.join(root, icon.filePath), path.join(target, icon.filePath));
 }
 await writeFile(path.join(target, '.nojekyll'), '');
 console.log('Viewer JSON, map, tiles and fonts prepared.');
+

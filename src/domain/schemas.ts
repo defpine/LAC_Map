@@ -37,14 +37,14 @@ export const markersFileSchema = z.object({
   markers: z.array(z.object({
     id: z.string(), type: z.enum(["institution", "shop", "npc", "garage", "landmark", "content", "bus_stop", "gas_station"]),
     name: z.string().optional(), color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), size: z.number().int().min(20).max(48).optional(),
-    iconRef: z.string().optional(), entityRef: z.string().optional(), shopType: z.enum(["clothing", "convenience", "restaurant", "bar", "club", "street_vendor", "gun_store", "car_dealership", "jewelry_store", "premium_shop"]).optional(), geometry: pointGeometry,
+    iconRef: z.string().optional(), bannerRef: z.string().optional(), entityRef: z.string().optional(), shopType: z.enum(["clothing", "convenience", "restaurant", "bar", "club", "street_vendor", "gun_store", "car_dealership", "jewelry_store", "premium_shop"]).optional(), geometry: pointGeometry,
   }).passthrough()),
 });
 
 export const iconsFileSchema = z.object({ images: z.array(z.object({
   id: z.string().regex(/^image_\d{6}$/),
   originalFileName: z.string().min(1),
-  filePath: z.string().regex(/^Assets\/images\/icons\/image_\d{6}\.(png|jpg|webp)$/),
+  filePath: z.string().regex(/^Assets\/images\/(icons|banners)\/image_\d{6}\.(png|jpg|webp)$/),
   format: z.enum(["png", "jpg", "webp"]),
   fileSize: z.number().int().positive().max(10 * 1024 * 1024),
   sha256: z.string().regex(/^[0-9a-f]{64}$/),
@@ -54,3 +54,4 @@ export const institutionsFileSchema = z.object({ institutions: z.array(z.object(
 export const shopsFileSchema = z.object({ shops: z.array(z.object({ id: z.string(), type: z.enum(["clothing", "convenience", "restaurant", "bar", "club", "street_vendor", "gun_store", "car_dealership", "jewelry_store", "premium_shop"]), name: z.string().optional(), description: z.string().optional(), items: z.array(z.string()).optional(), customFields }).passthrough()) });
 export const npcsFileSchema = z.object({ npcs: z.array(z.object({ id: z.string(), type: z.literal("npc").default("npc"), name: z.string().optional(), description: z.string().optional(), quests: z.array(z.string()).optional(), location, customFields }).passthrough()) });
 export const facilitiesFileSchema = z.object({ facilities: z.array(z.object({ id: z.string(), type: z.enum(["garage", "landmark", "content", "bus_stop", "gas_station"]), name: z.string().optional(), description: z.string().optional(), location, customFields }).passthrough()) });
+
