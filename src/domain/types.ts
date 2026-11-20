@@ -1,3 +1,5 @@
+import type { shopTypes } from "./schemas";
+
 export type TerrainType = "mountain" | "beach" | "lake" | "city";
 export type ZoneType = "jurisdiction" | "safe_zone" | "pvp_zone";
 export type RoadType = "highway" | "expressway" | "national_road";
@@ -77,7 +79,7 @@ export type MapMarker = {
 export type CustomField = { label: string; value: string };
 export type DetailLocation = { type: "building"; buildingRef: string } | { type: "free_text"; text: string };
 export type Institution = { id: string; type: "institution"; name?: string; description?: string; customFields?: readonly CustomField[] };
-export type ShopType = "clothing" | "convenience" | "restaurant" | "bar" | "club" | "street_vendor" | "gun_store" | "car_dealership" | "jewelry_store" | "premium_shop";
+export type ShopType = (typeof shopTypes)[number];
 export type Shop = { id: string; type: ShopType; name?: string; description?: string; items?: readonly string[]; customFields?: readonly CustomField[] };
 export type Npc = { id: string; type: "npc"; name?: string; description?: string; quests?: readonly string[]; location?: DetailLocation; customFields?: readonly CustomField[] };
 export type FacilityType = "garage" | "landmark" | "content" | "bus_stop" | "gas_station";

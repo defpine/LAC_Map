@@ -5,6 +5,7 @@
       "type": "shop",
       "name": "24/7 편의점 (땅끝북부점)",
       "size": 24,
+      "iconRef": "image_000002",
       "entityRef": "shop_000001",
       "shopType": "convenience",
       "geometry": {
@@ -13,22 +14,21 @@
           0.6512044270019531,
           0.852430555501302
         ]
-      },
-      "iconRef": "image_000002"
+      }
     },
     {
       "id": "marker_000002",
       "type": "gas_station",
-      "name": "Globe Oil 주유소 (땅끝 북부점)",
+      "name": "Globe Oil 주유소 (땅끝북부점)",
       "size": 24,
+      "iconRef": "image_000003",
       "geometry": {
         "type": "Point",
         "coordinates": [
           0.6478678385009765,
           0.853081597249349
         ]
-      },
-      "iconRef": "image_000003"
+      }
     },
     {
       "id": "marker_000003",
@@ -47,8 +47,9 @@
     {
       "id": "marker_000004",
       "type": "bus_stop",
-      "name": "고속버스 터미널",
+      "name": "고속버스 터미널  (북부버스터미널)",
       "size": 24,
+      "iconRef": "image_000004",
       "entityRef": "facility_000001",
       "geometry": {
         "type": "Point",
@@ -56,14 +57,15 @@
           0.47550455725097657,
           0.868109809000651
         ]
-      },
-      "iconRef": "image_000004"
+      }
     },
     {
       "id": "marker_000005",
       "type": "institution",
       "name": "LSPD 팔레토 베이 보안관 사무소",
       "size": 24,
+      "iconRef": "image_000005",
+      "bannerRef": "image_000006",
       "entityRef": "institution_000003",
       "geometry": {
         "type": "Point",
@@ -71,8 +73,138 @@
           0.4111328125,
           0.822645399251302
         ]
+      }
+    },
+    {
+      "id": "marker_000006",
+      "type": "content",
+      "name": "팔레토 농장",
+      "size": 24,
+      "iconRef": "image_000007",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.5047607421875,
+          0.859130859375
+        ]
+      }
+    },
+    {
+      "id": "marker_000007",
+      "type": "gas_station",
+      "name": "RON 주유소 (북부버스터미널점)",
+      "size": 24,
+      "iconRef": "image_000003",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.48128255212402343,
+          0.8671332465820313
+        ]
+      }
+    },
+    {
+      "id": "marker_000008",
+      "type": "gas_station",
+      "name": "Globe Oil 주유소 (북부버스터미널점)",
+      "size": 24,
+      "iconRef": "image_000003",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.47900390625,
+          0.868598090250651
+        ]
+      }
+    },
+    {
+      "id": "marker_000009",
+      "type": "shop",
+      "name": "윌리스 마트",
+      "size": 24,
+      "iconRef": "image_000001",
+      "shopType": "supermarket",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.4532537678222656,
+          0.8609878802897136
+        ]
+      }
+    },
+    {
+      "id": "marker_000010",
+      "type": "shop",
+      "name": "할인점 옷가게 (팔레토베이점)",
+      "size": 24,
+      "iconRef": "image_000008",
+      "shopType": "clothing",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.46163592932128905,
+          0.8603910921223958
+        ]
+      }
+    },
+    {
+      "id": "marker_000011",
+      "type": "gas_station",
+      "name": "XERO 주유소 (팔레토베이점)",
+      "size": 24,
+      "iconRef": "image_000003",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.4495102783203125,
+          0.8531211268717448
+        ]
+      }
+    },
+    {
+      "id": "marker_000012",
+      "type": "institution",
+      "name": "응급의료시설",
+      "size": 24,
+      "iconRef": "image_000009",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.43204752600097657,
+          0.8462727864583334
+        ]
+      }
+    },
+    {
+      "id": "marker_000013",
+      "type": "shop",
+      "name": "타투샵",
+      "size": 24,
+      "shopType": "tattoo_shop",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.4267578125,
+          0.83642578125
+        ]
       },
-      "iconRef": "image_000005"
+      "iconRef": "image_000010"
+    },
+    {
+      "id": "marker_000014",
+      "type": "shop",
+      "name": "총기상 (팔레토베이)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.4228515625,
+          0.8288302951660156
+        ]
+      },
+      "size": 24,
+      "iconRef": "image_000011",
+      "shopType": "gun_store"
     }
   ]
 }
+

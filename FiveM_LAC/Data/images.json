@@ -21,16 +21,16 @@
       "originalFileName": "Oil_Station.png",
       "filePath": "Assets/images/icons/image_000003.png",
       "format": "png",
-      "fileSize": 3240,
-      "sha256": "db44b51d1d71abdb1de7caf35a592767118ac80d61dd88047e50fd3090637d28"
+      "fileSize": 4206,
+      "sha256": "eb1e0e54ac97833a95ebd44e5e3348863363b04f2cf95b1e89faad2982c8e5e4"
     },
     {
       "id": "image_000004",
       "originalFileName": "Bus.png",
       "filePath": "Assets/images/icons/image_000004.png",
       "format": "png",
-      "fileSize": 4581,
-      "sha256": "95107026b85e5bcb909653899cfb4296132324f31196910eba8d0a5d6191d789"
+      "fileSize": 5050,
+      "sha256": "5a3f51675d3e1c9e4052d58399c26f6ffbff551efa89d2da231248a370db60ba"
     },
     {
       "id": "image_000005",
@@ -39,6 +39,55 @@
       "format": "png",
       "fileSize": 4697,
       "sha256": "99acc2f28df41fb06ce12a6de0c4156f32b2441bbb72d680a8322c7ae683e456"
+    },
+    {
+      "id": "image_000006",
+      "originalFileName": "LSPD_HQ.png",
+      "filePath": "Assets/images/banners/image_000006.png",
+      "format": "png",
+      "fileSize": 391523,
+      "sha256": "5a06f5623e174e8ea5fd17f2e0d70830bba1ed22ce93c75d64f07561046722b7"
+    },
+    {
+      "id": "image_000007",
+      "originalFileName": "Farm.png",
+      "filePath": "Assets/images/icons/image_000007.png",
+      "format": "png",
+      "fileSize": 5983,
+      "sha256": "79768ac3b5143db31bd5535793d7efdf6acd27c5c6ff131ba706c94bbffda993"
+    },
+    {
+      "id": "image_000008",
+      "originalFileName": "Clothes_Shop.png",
+      "filePath": "Assets/images/icons/image_000008.png",
+      "format": "png",
+      "fileSize": 4463,
+      "sha256": "d9dde8eb00fe88f157dcbc326958255680d11885cb916b7df07b63debfc0d49e"
+    },
+    {
+      "id": "image_000009",
+      "originalFileName": "EMS_White.png",
+      "filePath": "Assets/images/icons/image_000009.png",
+      "format": "png",
+      "fileSize": 5419,
+      "sha256": "78afbdf103cdc943480699c8fcd2725d7a89be686ed90f0beb742c7ec88f125a"
+    },
+    {
+      "id": "image_000010",
+      "originalFileName": "Tattoo.png",
+      "filePath": "Assets/images/icons/image_000010.png",
+      "format": "png",
+      "fileSize": 5361,
+      "sha256": "372942f1447db48a351db59bbdb6b1ec72bd30d7119b686e9a22711f6cabae07"
+    },
+    {
+      "id": "image_000011",
+      "originalFileName": "Gun.png",
+      "filePath": "Assets/images/icons/image_000011.png",
+      "format": "png",
+      "fileSize": 4184,
+      "sha256": "21d3c6f74e36ff212c93c6947908af4c7b2824d39955507965fb1fa8c64b879c"
     }
   ]
 }
+

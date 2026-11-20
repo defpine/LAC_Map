@@ -34,6 +34,13 @@
       "name": "LSPD 데이비스 지서",
       "description": "LSPD 데이비스 지서",
       "customFields": []
+    },
+    {
+      "id": "institution_000006",
+      "type": "institution",
+      "name": "LS 메디컬 센터",
+      "customFields": []
     }
   ]
 }
+
