@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 
 const result = await build({ entryPoints: ['src/domain/viewerVisibility.ts'], bundle: true, format: 'esm', write: false, platform: 'node' });
-const { viewerAudience, visibleInViewer } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
+const { viewerAudience, viewerTitle, visibleInViewer } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
+assert.equal(viewerTitle('/LAC_Map/', '/LAC_Map/'), 'FiveM LAC 공무 지도');
+assert.equal(viewerTitle('/LAC_Map/law_enforcement/', '/LAC_Map/'), 'FiveM LAC 공무 지도 (법 집행 기관)');
+assert.equal(viewerTitle('/LAC_Map/medical_institution/', '/LAC_Map/'), 'FiveM LAC 공무 지도 (의료 기관)');
 assert.equal(viewerAudience('/LAC_Map/', '/LAC_Map/'), 'law_enforcement');
 assert.equal(viewerAudience('/LAC_Map/law_enforcement/', '/LAC_Map/'), 'law_enforcement');
 assert.equal(viewerAudience('/LAC_Map/medical_institution/', '/LAC_Map/'), 'medical_institution');

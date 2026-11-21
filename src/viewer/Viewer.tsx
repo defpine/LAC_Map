@@ -4,6 +4,7 @@ import { buildingColors, markerColors, roadStyles, terrainColors, zoneColors } f
 import { MapCanvas, type SelectedFeature, type Visibility } from "../ui/MapCanvas";
 import { PopupBanner } from "../ui/PopupBanner";
 import { loadProject } from "./loadProject";
+import { viewerTitle } from "../domain/viewerVisibility";
 
 const labels: Record<string, string> = { mountain: "산", beach: "해변", lake: "호수", city: "도시", institution: "기관", shop: "상점", residence: "주거", other: "기타", npc: "NPC", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소", highway: "고속도로", expressway: "도시고속도로", national_road: "일반도로", jurisdiction: "관할 구역", safe_zone: "안전 구역", pvp_zone: "PVP 구역" };
 const initialVisibility = (): Visibility => ({ terrain: { mountain: true, beach: true, lake: true, city: true }, building: { institution: true, shop: true, residence: true, other: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true }, zone: true, road: true, postalCode: true });
@@ -17,6 +18,7 @@ function featureColor(selection: SelectedFeature): string {
 }
 
 export function Viewer() {
+  useEffect(() => { document.title = viewerTitle(window.location.pathname, import.meta.env.BASE_URL); }, []);
   const [project, setProject] = useState<MapProject | null>(null);
   const [error, setError] = useState("");
   useEffect(() => { const controller = new AbortController(); void loadProject(controller.signal).then(setProject).catch((e: Error) => { if (!controller.signal.aborted) setError(e.message); }); return () => controller.abort(); }, []);

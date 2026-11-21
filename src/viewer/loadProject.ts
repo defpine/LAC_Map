@@ -1,6 +1,6 @@
 import * as schemas from "../domain/schemas";
 import type { MapProject } from "../domain/types";
-import { viewerAudience, visibleInViewer } from "../domain/viewerVisibility";
+import { viewerAudience, viewerTitle, visibleInViewer } from "../domain/viewerVisibility";
 
 export const assetUrl = (path: string) => {
   const clean = path.replaceAll("\\", "/");
@@ -25,7 +25,7 @@ export async function loadProject(signal: AbortSignal): Promise<MapProject> {
   if (!image) throw new Error("선택한 지도 이미지가 없습니다.");
   const audience = viewerAudience(window.location.pathname, import.meta.env.BASE_URL);
   const visible = (feature: { viewerVisibility?: import("../domain/types").ViewerVisibility }) => visibleInViewer(feature, audience);
-  return { projectName: project.projectName, icons: iconData.images.map(icon => ({ ...icon, url: `${assetUrl(icon.filePath)}?v=${encodeURIComponent(version)}` })), ...geography, ...buildings, ...markers, ...institutions, ...shops, ...npcs, ...facilities,
+  return { projectName: viewerTitle(window.location.pathname, import.meta.env.BASE_URL), icons: iconData.images.map(icon => ({ ...icon, url: `${assetUrl(icon.filePath)}?v=${encodeURIComponent(version)}` })), ...geography, ...buildings, ...markers, ...institutions, ...shops, ...npcs, ...facilities,
     terrain: geography.terrain.filter(visible), zones: geography.zones.filter(visible), roads: geography.roads.filter(visible), buildings: buildings.buildings.filter(visible), markers: markers.markers.filter(visible),
     image: { width: image.width, height: image.height, url: assetUrl(image.filePath), previewUrl: image.previewFilePath ? assetUrl(image.previewFilePath) : undefined,
       tileUrlTemplate: image.tileDirectory ? assetUrl(`${image.tileDirectory}/level_{level}/{x}_{y}.png`) : undefined } };
