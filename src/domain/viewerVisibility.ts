@@ -9,6 +9,6 @@ export function viewerAudience(pathname: string, baseUrl: string): ViewerAudienc
 }
 
 export function visibleInViewer(feature: { viewerVisibility?: ViewerVisibility }, audience: ViewerAudience): boolean {
-  return feature.viewerVisibility?.[audience] !== false;
+  return feature.viewerVisibility?.[audience] === true;
 }
 

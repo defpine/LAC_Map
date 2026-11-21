@@ -50,7 +50,7 @@ export function App() {
   const [draftPostalCode, setDraftPostalCode] = useState("");
   const [draftIconRef, setDraftIconRef] = useState("");
   const [draftBannerRef, setDraftBannerRef] = useState("");
-  const [draftViewerVisibility, setDraftViewerVisibility] = useState({ law_enforcement: true, medical_institution: true });
+  const [draftViewerVisibility, setDraftViewerVisibility] = useState({ law_enforcement: false, medical_institution: false });
   const [entranceTarget, setEntranceTarget] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [visibleEntranceUnit, setVisibleEntranceUnit] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -227,7 +227,7 @@ export function App() {
     setDraftPostalCode(selection?.kind === "building" ? selection.feature.postalCode ?? "" : "");
     setDraftIconRef(selection?.kind === "building" || selection?.kind === "marker" ? selection.feature.iconRef ?? "" : "");
     setDraftBannerRef(selection?.kind === "marker" ? selection.feature.bannerRef ?? "" : "");
-    setDraftViewerVisibility({ law_enforcement: selection?.feature.viewerVisibility?.law_enforcement !== false, medical_institution: selection?.feature.viewerVisibility?.medical_institution !== false });
+    setDraftViewerVisibility({ law_enforcement: selection?.feature.viewerVisibility?.law_enforcement === true, medical_institution: selection?.feature.viewerVisibility?.medical_institution === true });
     setDeleteConfirm(false);
   }, [selection]);
   useEffect(() => {
