@@ -290,10 +290,6 @@
             ]
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -506,10 +502,6 @@
             ]
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     }
   ],
@@ -628,10 +620,6 @@
             ]
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1352,10 +1340,6 @@
             ]
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     }
   ],
@@ -1470,10 +1454,6 @@
             0.805885829264323
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1550,10 +1530,6 @@
             0.5545428806966146
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1618,10 +1594,6 @@
             0.33941884065755207
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1702,10 +1674,6 @@
             0.29007281787109374
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1730,10 +1698,6 @@
             0.28752579801432293
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1810,10 +1774,6 @@
             0.29007281787109374
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1894,10 +1854,6 @@
             0.1804470485839844
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -1990,10 +1946,6 @@
             0.33948168619791663
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -2302,10 +2254,6 @@
             0.7848838569335937
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     },
     {
@@ -2610,10 +2558,6 @@
             0.59326171875
           ]
         ]
-      },
-      "viewerVisibility": {
-        "law_enforcement": false,
-        "medical_institution": false
       }
     }
   ]

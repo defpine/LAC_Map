@@ -50,7 +50,6 @@ export function App() {
   const [draftPostalCode, setDraftPostalCode] = useState("");
   const [draftIconRef, setDraftIconRef] = useState("");
   const [draftBannerRef, setDraftBannerRef] = useState("");
-  const [draftViewerVisibility, setDraftViewerVisibility] = useState({ law_enforcement: false, medical_institution: false });
   const [entranceTarget, setEntranceTarget] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [visibleEntranceUnit, setVisibleEntranceUnit] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -227,7 +226,6 @@ export function App() {
     setDraftPostalCode(selection?.kind === "building" ? selection.feature.postalCode ?? "" : "");
     setDraftIconRef(selection?.kind === "building" || selection?.kind === "marker" ? selection.feature.iconRef ?? "" : "");
     setDraftBannerRef(selection?.kind === "marker" ? selection.feature.bannerRef ?? "" : "");
-    setDraftViewerVisibility({ law_enforcement: selection?.feature.viewerVisibility?.law_enforcement === true, medical_institution: selection?.feature.viewerVisibility?.medical_institution === true });
     setDeleteConfirm(false);
   }, [selection]);
   useEffect(() => {
@@ -325,27 +323,27 @@ export function App() {
     if (!selection) return;
     const name = draftName.trim() || undefined;
     if (selection.kind === "terrain") {
-      const feature: Terrain = { ...selection.feature, name, type: draftType as TerrainType, viewerVisibility: draftViewerVisibility };
+      const feature: Terrain = { ...selection.feature, name, type: draftType as TerrainType };
       commitProject((current) => ({ ...current, terrain: current.terrain.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "terrain", feature });
     } else if (selection.kind === "zone") {
-      const feature: Zone = { ...selection.feature, name, type: draftType as ZoneType, viewerVisibility: draftViewerVisibility };
+      const feature: Zone = { ...selection.feature, name, type: draftType as ZoneType };
       commitProject((current) => ({ ...current, zones: current.zones.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "zone", feature });
     } else if (selection.kind === "road") {
       const color = isHexColor(draftRoadColor) ? draftRoadColor.toUpperCase() : undefined;
-      const feature: Road = { ...selection.feature, name, type: draftType as RoadType, width: clampInteger(draftRoadWidth, 4, 100, selection.feature.width), color, viewerVisibility: draftViewerVisibility };
+      const feature: Road = { ...selection.feature, name, type: draftType as RoadType, width: clampInteger(draftRoadWidth, 4, 100, selection.feature.width), color };
       commitProject((current) => ({ ...current, roads: current.roads.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "road", feature });
     } else if (selection.kind === "building") {
       const postalCode = draftPostalCode.trim() || undefined;
-      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined, viewerVisibility: draftViewerVisibility };
+      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined };
       commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "building", feature });
     } else {
       const color = isHexColor(draftMarkerColor) ? draftMarkerColor.toUpperCase() : undefined;
       const type = draftType as MarkerType;
-      const feature: MapMarker = { ...selection.feature, name, type, size: clampInteger(draftMarkerSize, 20, 48, selection.feature.size ?? 24), color, iconRef: draftIconRef || undefined, bannerRef: draftBannerRef || undefined, shopType: type === "shop" ? draftMarkerShopType : undefined, viewerVisibility: draftViewerVisibility };
+      const feature: MapMarker = { ...selection.feature, name, type, size: clampInteger(draftMarkerSize, 20, 48, selection.feature.size ?? 24), color, iconRef: draftIconRef || undefined, bannerRef: draftBannerRef || undefined, shopType: type === "shop" ? draftMarkerShopType : undefined };
       commitProject((current) => ({ ...current, markers: current.markers.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "marker", feature });
     }
@@ -468,7 +466,6 @@ export function App() {
             {editorMode && <div className="inspector-fields">
               <label>이름<input value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder="이름 없음" /></label>
               <label>종류<select value={draftType} onChange={(event) => setDraftType(event.target.value)}>{typeOptions(selection.kind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-              <fieldset className="viewer-visibility"><legend>Viewer 표시</legend><label className="checkbox-field"><input type="checkbox" checked={draftViewerVisibility.law_enforcement} onChange={(event) => setDraftViewerVisibility((current) => ({ ...current, law_enforcement: event.target.checked }))} /> 법 집행 기관용</label><label className="checkbox-field"><input type="checkbox" checked={draftViewerVisibility.medical_institution} onChange={(event) => setDraftViewerVisibility((current) => ({ ...current, medical_institution: event.target.checked }))} /> 의료 기관용</label></fieldset>
               {selection.kind === "road" && <>
                 <label>기본 폭 (4–100)<input type="number" min="4" max="100" value={draftRoadWidth} onChange={(event) => setDraftRoadWidth(event.target.value)} /></label>
                 <label>사용자 색상 (선택)<input value={draftRoadColor} onChange={(event) => setDraftRoadColor(event.target.value)} placeholder="#RRGGBB · 비워두면 종류 기본색" /></label>
