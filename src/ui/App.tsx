@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { demoProject } from "../domain/demo";
+import { shopTypes } from "../domain/schemas";
 import type { Building, BuildingType, DetailLocation, Facility, FacilityType, Institution, MapMarker, MapProject, MarkerType, Npc, ResidenceUnit, Road, RoadType, Shop, ShopType, Terrain, TerrainType, Zone, ZoneType } from "../domain/types";
 import { chooseProjectFolder, supportsProjectFolderAccess, type ProjectFolderReport, validateProjectFolder } from "../editor/fileSystem";
 import { loadMapProject } from "../editor/projectLoader";
 import { saveProjectData } from "../editor/projectSaver";
 import { buildingColors, markerColors, roadStyles, terrainColors, zoneColors } from "../domain/theme";
 import { MapCanvas, type DrawKind, type DrawnGeometry, type SelectedFeature, type Visibility } from "./MapCanvas";
+import { PopupBanner } from "./PopupBanner";
 
 const MAX_HISTORY_ENTRIES = 100;
 type DetailKind = "institution" | "shop" | "npc" | "facility";
@@ -47,6 +49,8 @@ export function App() {
   const [draftPurchasable, setDraftPurchasable] = useState(false);
   const [draftPostalCode, setDraftPostalCode] = useState("");
   const [draftIconRef, setDraftIconRef] = useState("");
+  const [draftBannerRef, setDraftBannerRef] = useState("");
+  const [draftViewerVisibility, setDraftViewerVisibility] = useState({ law_enforcement: true, medical_institution: true });
   const [entranceTarget, setEntranceTarget] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [visibleEntranceUnit, setVisibleEntranceUnit] = useState<{ buildingId: string; unitId: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -222,6 +226,8 @@ export function App() {
     setDraftPurchasable(selection?.kind === "building" && Boolean(selection.feature.isPurchasable));
     setDraftPostalCode(selection?.kind === "building" ? selection.feature.postalCode ?? "" : "");
     setDraftIconRef(selection?.kind === "building" || selection?.kind === "marker" ? selection.feature.iconRef ?? "" : "");
+    setDraftBannerRef(selection?.kind === "marker" ? selection.feature.bannerRef ?? "" : "");
+    setDraftViewerVisibility({ law_enforcement: selection?.feature.viewerVisibility?.law_enforcement !== false, medical_institution: selection?.feature.viewerVisibility?.medical_institution !== false });
     setDeleteConfirm(false);
   }, [selection]);
   useEffect(() => {
@@ -319,35 +325,35 @@ export function App() {
     if (!selection) return;
     const name = draftName.trim() || undefined;
     if (selection.kind === "terrain") {
-      const feature: Terrain = { ...selection.feature, name, type: draftType as TerrainType };
+      const feature: Terrain = { ...selection.feature, name, type: draftType as TerrainType, viewerVisibility: draftViewerVisibility };
       commitProject((current) => ({ ...current, terrain: current.terrain.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "terrain", feature });
     } else if (selection.kind === "zone") {
-      const feature: Zone = { ...selection.feature, name, type: draftType as ZoneType };
+      const feature: Zone = { ...selection.feature, name, type: draftType as ZoneType, viewerVisibility: draftViewerVisibility };
       commitProject((current) => ({ ...current, zones: current.zones.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "zone", feature });
     } else if (selection.kind === "road") {
       const color = isHexColor(draftRoadColor) ? draftRoadColor.toUpperCase() : undefined;
-      const feature: Road = { ...selection.feature, name, type: draftType as RoadType, width: clampInteger(draftRoadWidth, 4, 100, selection.feature.width), color };
+      const feature: Road = { ...selection.feature, name, type: draftType as RoadType, width: clampInteger(draftRoadWidth, 4, 100, selection.feature.width), color, viewerVisibility: draftViewerVisibility };
       commitProject((current) => ({ ...current, roads: current.roads.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "road", feature });
     } else if (selection.kind === "building") {
       const postalCode = draftPostalCode.trim() || undefined;
-      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined };
+      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined, viewerVisibility: draftViewerVisibility };
       commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "building", feature });
     } else {
       const color = isHexColor(draftMarkerColor) ? draftMarkerColor.toUpperCase() : undefined;
       const type = draftType as MarkerType;
-      const feature: MapMarker = { ...selection.feature, name, type, size: clampInteger(draftMarkerSize, 20, 48, selection.feature.size ?? 24), color, iconRef: draftIconRef || undefined, shopType: type === "shop" ? draftMarkerShopType : undefined };
+      const feature: MapMarker = { ...selection.feature, name, type, size: clampInteger(draftMarkerSize, 20, 48, selection.feature.size ?? 24), color, iconRef: draftIconRef || undefined, bannerRef: draftBannerRef || undefined, shopType: type === "shop" ? draftMarkerShopType : undefined, viewerVisibility: draftViewerVisibility };
       commitProject((current) => ({ ...current, markers: current.markers.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "marker", feature });
     }
     setDirty(true);
   };
-  const registerIcon = async (file: File) => {
+  const registerIcon = async (file: File, purpose: "icon" | "banner" = "icon") => {
     try {
-      if (!projectRoot) throw new Error("아이콘을 등록하려면 먼저 프로젝트 폴더를 연결하세요.");
+      if (!projectRoot) throw new Error("이미지를 등록하려면 먼저 프로젝트 폴더를 연결하세요.");
       if (file.size === 0 || file.size > 10 * 1024 * 1024) throw new Error("이미지는 10MB 이하의 비어 있지 않은 파일이어야 합니다.");
       const bytes = new Uint8Array(await file.arrayBuffer());
       const signature = Array.from(bytes.slice(0, 12));
@@ -362,12 +368,12 @@ export function App() {
       const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))).map((byte) => byte.toString(16).padStart(2, "0")).join("");
       const current = projectRef.current;
       const duplicate = current.icons?.find((icon) => icon.sha256 === hash);
-      if (duplicate) { setDraftIconRef(duplicate.id); return; }
+      if (duplicate) { if (purpose === "banner") setDraftBannerRef(duplicate.id); else setDraftIconRef(duplicate.id); return; }
       const id = nextId(current.icons ?? [], "image");
       const format = png ? "png" : jpg ? "jpg" : "webp";
-      const icon = { id, originalFileName: file.name, filePath: `Assets/images/icons/${id}.${format}`, format, fileSize: file.size, sha256: hash, url: URL.createObjectURL(file), pendingFile: file } as const;
+      const icon = { id, originalFileName: file.name, filePath: `Assets/images/${purpose === "banner" ? "banners" : "icons"}/${id}.${format}`, format, fileSize: file.size, sha256: hash, url: URL.createObjectURL(file), pendingFile: file } as const;
       commitProject((value) => ({ ...value, icons: [...(value.icons ?? []), icon] }));
-      setDraftIconRef(id);
+      if (purpose === "banner") setDraftBannerRef(id); else setDraftIconRef(id);
       setDirty(true);
     } catch (error) { setFolderError(error instanceof Error ? error.message : "아이콘을 등록하지 못했습니다."); }
   };
@@ -448,6 +454,7 @@ export function App() {
           </div>
           <MapLegend open={legendOpen} onToggle={() => setLegendOpen((open) => !open)} />
           {selection && <aside className="detail-card" role="dialog" aria-label="선택한 객체 정보">
+            {selection.kind === "marker" && <PopupBanner url={project.icons?.find((image) => image.id === selection.feature.bannerRef)?.url} />}
             <button className="detail-close" onClick={() => setSelection(null)} aria-label="닫기">×</button>
             <div className={`feature-chip ${selection.kind}`} style={{ backgroundColor: featureChipColor(selection) }}>{(selection.kind === "building" || selection.kind === "marker") && (() => { const icon = project.icons?.find((item) => item.id === selection.feature.iconRef); return icon?.url ? <img className="feature-icon-image" src={icon.url} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null; })()}</div>
             <p className="eyebrow">{kindLabel(selection.kind, selection.feature.type)}{!editorMode && linkedSelectionDetail && selection.kind === "marker" && selection.feature.type === "shop" ? ` · ${detailTypeLabel(linkedSelectionDetail.type)}` : ""}</p>
@@ -461,6 +468,7 @@ export function App() {
             {editorMode && <div className="inspector-fields">
               <label>이름<input value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder="이름 없음" /></label>
               <label>종류<select value={draftType} onChange={(event) => setDraftType(event.target.value)}>{typeOptions(selection.kind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+              <fieldset className="viewer-visibility"><legend>Viewer 표시</legend><label className="checkbox-field"><input type="checkbox" checked={draftViewerVisibility.law_enforcement} onChange={(event) => setDraftViewerVisibility((current) => ({ ...current, law_enforcement: event.target.checked }))} /> 법 집행 기관용</label><label className="checkbox-field"><input type="checkbox" checked={draftViewerVisibility.medical_institution} onChange={(event) => setDraftViewerVisibility((current) => ({ ...current, medical_institution: event.target.checked }))} /> 의료 기관용</label></fieldset>
               {selection.kind === "road" && <>
                 <label>기본 폭 (4–100)<input type="number" min="4" max="100" value={draftRoadWidth} onChange={(event) => setDraftRoadWidth(event.target.value)} /></label>
                 <label>사용자 색상 (선택)<input value={draftRoadColor} onChange={(event) => setDraftRoadColor(event.target.value)} placeholder="#RRGGBB · 비워두면 종류 기본색" /></label>
@@ -476,6 +484,7 @@ export function App() {
                 <label>사용자 색상 (선택)<input value={draftMarkerColor} onChange={(event) => setDraftMarkerColor(event.target.value)} placeholder="#RRGGBB · 비워두면 종류 기본색" /></label>
               </>}
               {(selection.kind === "building" || selection.kind === "marker") && <><label>전용 아이콘<select value={draftIconRef} onChange={(event) => setDraftIconRef(event.target.value)}><option value="">없음 · 기본 색상 사용</option>{(project.icons ?? []).map((icon) => <option key={icon.id} value={icon.id}>{icon.originalFileName}</option>)}</select></label><label>아이콘 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file); }} /></label><small>PNG, JPG, WebP · 최대 10MB · 애니메이션 제외</small></>}
+              {selection.kind === "marker" && <><label>미리보기 배너<select value={draftBannerRef} onChange={(event) => setDraftBannerRef(event.target.value)}><option value="">없음</option>{(project.icons ?? []).map((image) => <option key={image.id} value={image.id}>{image.originalFileName}</option>)}</select></label><label>배너 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file, "banner"); }} /></label><small>권장 800 × 450px · 16:9 · PNG, JPG, WebP · 최대 10MB</small></>}
               <div className="inspector-actions"><button className="save-property" onClick={saveSelectedProperties}>속성 Save</button><button className="delete-property" onClick={() => setDeleteConfirm(true)}>Delete</button></div>
               {selection.kind === "building" && selection.feature.type === "residence" && <ResidenceUnitsEditor building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} onAddUnit={addResidenceUnit} onUpdateUnit={updateResidenceUnit} onDeleteUnit={deleteResidenceUnit} onAddEntrance={(unitId) => { setVisibleEntranceUnit({ buildingId: selection.feature.id, unitId }); setEntranceTarget({ buildingId: selection.feature.id, unitId }); setDrawKind("entrance"); }} onDeleteEntrance={deleteEntrance} />}
             </div>}
@@ -689,11 +698,11 @@ function detailKindLabel(kind: DetailKind): string {
   return ({ institution: "기관", shop: "상점", npc: "NPC", facility: "시설" })[kind];
 }
 function detailTypeLabel(type: string): string {
-  return ({ institution: "기관", npc: "NPC", clothing: "의류점", convenience: "편의점", restaurant: "음식점", bar: "바", club: "클럽", street_vendor: "노점", gun_store: "총포상", car_dealership: "차량 판매점", jewelry_store: "보석상", premium_shop: "프리미엄 상점", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" }[type] ?? type);
+  return ({ institution: "기관", npc: "NPC", clothing: "의류점", convenience: "편의점", restaurant: "음식점", bar: "바", club: "클럽", street_vendor: "노점", gun_store: "총포상", car_dealership: "차량 판매점", jewelry_store: "보석상", premium_shop: "프리미엄 상점", tattoo_shop: "타투샵", supermarket: "마트", pawn_shop: "전당포", pet_shop: "펫샵", furniture_store: "가구점", ifruit_store: "iFruit 스토어", hair_salon: "미용실", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" }[type] ?? type);
 }
 function detailTypeOptions(kind: "shop" | "facility"): { value: string; label: string }[] {
   return kind === "shop"
-    ? ["clothing", "convenience", "restaurant", "bar", "club", "street_vendor", "gun_store", "car_dealership", "jewelry_store", "premium_shop"].map((value) => ({ value, label: detailTypeLabel(value) }))
+    ? shopTypes.map((value) => ({ value, label: detailTypeLabel(value) }))
     : ["garage", "landmark", "content", "bus_stop", "gas_station"].map((value) => ({ value, label: detailTypeLabel(value) }));
 }
 
@@ -740,3 +749,4 @@ function validateResidenceEntrances(project: MapProject): string | null {
   const invalid = project.buildings.find((building) => building.type === "residence" && building.isBurglaryTarget && (!(building.units?.length) || building.units.some((unit) => unit.entrances.length === 0)));
   return invalid ? `절도 대상 주거 건물 “${invalid.name ?? invalid.id}”의 모든 유닛에는 출입구가 최소 1개 필요합니다.` : null;
 }
+

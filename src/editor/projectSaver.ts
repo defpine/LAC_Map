@@ -22,14 +22,14 @@ export async function saveProjectData(root: FileSystemDirectoryHandle, project: 
   }
 
   const completed: string[] = [];
-  const createdIcons: string[] = [];
-  let iconDirectory: FileSystemDirectoryHandle | undefined;
+  const createdIcons: { directory: FileSystemDirectoryHandle; name: string }[] = [];
   try {
     for (const icon of project.icons ?? []) {
       if (!icon.pendingFile) continue;
       const assets = await root.getDirectoryHandle("Assets");
       const images = await assets.getDirectoryHandle("images", { create: true });
-      iconDirectory = await images.getDirectoryHandle("icons", { create: true });
+      if (!/^Assets\/images\/(icons|banners)\/image_\d{6}\.(png|jpg|webp)$/.test(icon.filePath)) throw new Error("이미지 경로가 올바르지 않습니다.");
+      const iconDirectory = await images.getDirectoryHandle(icon.filePath.split("/")[2], { create: true });
       const filename = icon.filePath.split("/").at(-1)!;
       try {
         await iconDirectory.getFileHandle(filename);
@@ -38,7 +38,7 @@ export async function saveProjectData(root: FileSystemDirectoryHandle, project: 
         if (!(error instanceof DOMException && error.name === "NotFoundError")) throw error;
       }
       const handle = await iconDirectory.getFileHandle(filename, { create: true });
-      createdIcons.push(filename);
+      createdIcons.push({ directory: iconDirectory, name: filename });
       const writer = await handle.createWritable();
       await writer.write(icon.pendingFile);
       await writer.close();
@@ -56,8 +56,8 @@ export async function saveProjectData(root: FileSystemDirectoryHandle, project: 
         restoreFailures.push(name);
       }
     }
-    for (const name of createdIcons.reverse()) {
-      try { await iconDirectory?.removeEntry(name); } catch { restoreFailures.push(`아이콘 ${name}`); }
+    for (const item of createdIcons.reverse()) {
+      try { await item.directory.removeEntry(item.name); } catch { restoreFailures.push(`이미지 ${item.name}`); }
     }
     const suffix = restoreFailures.length ? ` 복원하지 못한 파일: ${restoreFailures.join(", ")}` : " 이전 저장 상태로 복원했습니다.";
     throw new Error(`저장에 실패했습니다.${suffix}`, { cause: error });
@@ -74,3 +74,4 @@ async function writeText(directory: FileSystemDirectoryHandle, name: string, tex
 function json(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
+

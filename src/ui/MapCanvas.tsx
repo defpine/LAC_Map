@@ -352,3 +352,4 @@ function darken(hex: string): string {
   const channel = (shift: number) => Math.round(((value >> shift) & 0xff) * 0.75).toString(16).padStart(2, "0");
   return `#${channel(16)}${channel(8)}${channel(0)}`;
 }
+

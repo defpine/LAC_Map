@@ -19,8 +19,10 @@ export type Position = readonly [number, number];
 export type PolygonGeometry = { type: "Polygon"; coordinates: readonly (readonly Position[])[] };
 export type LineGeometry = { type: "LineString"; coordinates: readonly Position[] };
 export type PointGeometry = { type: "Point"; coordinates: Position };
+export type ViewerVisibility = { law_enforcement: boolean; medical_institution: boolean };
 
 export type Terrain = {
+  viewerVisibility?: ViewerVisibility;
   id: string;
   type: TerrainType;
   name?: string;
@@ -28,6 +30,7 @@ export type Terrain = {
 };
 
 export type Zone = {
+  viewerVisibility?: ViewerVisibility;
   id: string;
   type: ZoneType;
   name?: string;
@@ -35,6 +38,7 @@ export type Zone = {
 };
 
 export type Road = {
+  viewerVisibility?: ViewerVisibility;
   id: string;
   type: RoadType;
   name?: string;
@@ -44,6 +48,7 @@ export type Road = {
 };
 
 export type Building = {
+  viewerVisibility?: ViewerVisibility;
   color?: string;
   iconRef?: string;
   id: string;
@@ -64,6 +69,7 @@ export type ResidenceUnit = {
 };
 
 export type MapMarker = {
+  viewerVisibility?: ViewerVisibility;
   id: string;
   type: MarkerType;
   name?: string;

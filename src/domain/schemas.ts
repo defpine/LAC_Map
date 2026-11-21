@@ -6,6 +6,7 @@ const pointGeometry = z.object({ type: z.literal("Point"), coordinates: position
 const lineGeometry = z.object({ type: z.literal("LineString"), coordinates: z.array(position).min(2) });
 const polygonGeometry = z.object({ type: z.literal("Polygon"), coordinates: z.array(z.array(position).min(4)).min(1) });
 const customFields = z.array(z.object({ label: z.string(), value: z.string() })).optional();
+const viewerVisibility = z.object({ law_enforcement: z.boolean(), medical_institution: z.boolean() }).optional();
 const location = z.discriminatedUnion("type", [z.object({ type: z.literal("building"), buildingRef: z.string() }), z.object({ type: z.literal("free_text"), text: z.string() })]).optional();
 
 export const projectFileSchema = z.object({
@@ -22,14 +23,14 @@ export const projectFileSchema = z.object({
 }).passthrough();
 
 export const geographyFileSchema = z.object({
-  terrain: z.array(z.object({ id: z.string(), type: z.enum(["mountain", "beach", "lake", "city"]), name: z.string().optional(), geometry: polygonGeometry }).passthrough()),
-  zones: z.array(z.object({ id: z.string(), type: z.enum(["jurisdiction", "safe_zone", "pvp_zone"]), name: z.string().optional(), geometry: polygonGeometry }).passthrough()),
-  roads: z.array(z.object({ id: z.string(), type: z.enum(["highway", "expressway", "national_road"]), name: z.string().optional(), width: z.number().int().min(4).max(100), color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), geometry: lineGeometry }).passthrough()),
+  terrain: z.array(z.object({ id: z.string(), type: z.enum(["mountain", "beach", "lake", "city"]), name: z.string().optional(), viewerVisibility, geometry: polygonGeometry }).passthrough()),
+  zones: z.array(z.object({ id: z.string(), type: z.enum(["jurisdiction", "safe_zone", "pvp_zone"]), name: z.string().optional(), viewerVisibility, geometry: polygonGeometry }).passthrough()),
+  roads: z.array(z.object({ id: z.string(), type: z.enum(["highway", "expressway", "national_road"]), name: z.string().optional(), width: z.number().int().min(4).max(100), color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), viewerVisibility, geometry: lineGeometry }).passthrough()),
 });
 
 export const buildingsFileSchema = z.object({
   buildings: z.array(z.object({
-    id: z.string(), type: z.enum(["institution", "shop", "residence", "other"]), name: z.string().optional(),
+    id: z.string(), type: z.enum(["institution", "shop", "residence", "other"]), name: z.string().optional(), viewerVisibility,
     color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
   }).passthrough()),
 });
@@ -37,7 +38,7 @@ export const buildingsFileSchema = z.object({
 export const markersFileSchema = z.object({
   markers: z.array(z.object({
     id: z.string(), type: z.enum(["institution", "shop", "npc", "garage", "landmark", "content", "bus_stop", "gas_station"]),
-    name: z.string().optional(), color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), size: z.number().int().min(20).max(48).optional(),
+    name: z.string().optional(), viewerVisibility, color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), size: z.number().int().min(20).max(48).optional(),
     iconRef: z.string().optional(), bannerRef: z.string().optional(), entityRef: z.string().optional(), shopType: z.enum(shopTypes).optional(), geometry: pointGeometry,
   }).passthrough()),
 });
