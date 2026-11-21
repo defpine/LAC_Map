@@ -3,7 +3,7 @@ import type { MapProject } from "./types";
 // This preview data keeps the Viewer usable before an administrator connects a
 // real MyMapProject folder in the Editor.
 export const demoProject: MapProject = {
-  projectName: "Los Santos Custom Map",
+  projectName: "FiveM LAC 서버 지도 (법 집행 기관용)",
   image: { url: "/assets/maps/map_000001.png", tileUrlTemplate: "/assets/maps/tiles/map_000001/level_{level}/{x}_{y}.png", width: 8192, height: 12288 },
   terrain: [
     {
@@ -54,3 +54,4 @@ export const demoProject: MapProject = {
   npcs: [],
   facilities: [],
 };
+

@@ -1,5 +1,5 @@
 {
-  "projectName": "Los Santos Custom Map",
+  "projectName": "FiveM LAC 서버 지도 (법 집행 기관용)",
   "projectVersion": "0.1.0",
   "schemaVersion": 1,
   "currentMapImageRef": "map_000001",
@@ -18,3 +18,4 @@
     }
   ]
 }
+
