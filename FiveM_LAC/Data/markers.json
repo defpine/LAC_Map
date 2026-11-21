@@ -180,6 +180,7 @@
       "type": "shop",
       "name": "타투샵",
       "size": 24,
+      "iconRef": "image_000010",
       "shopType": "tattoo_shop",
       "geometry": {
         "type": "Point",
@@ -187,23 +188,23 @@
           0.4267578125,
           0.83642578125
         ]
-      },
-      "iconRef": "image_000010"
+      }
     },
     {
       "id": "marker_000014",
       "type": "shop",
       "name": "총기상 (팔레토베이)",
+      "size": 24,
+      "iconRef": "image_000011",
+      "shopType": "gun_store",
       "geometry": {
         "type": "Point",
         "coordinates": [
           0.4228515625,
           0.8288302951660156
         ]
-      },
-      "size": 24,
-      "iconRef": "image_000011",
-      "shopType": "gun_store"
+      }
     }
   ]
 }
+

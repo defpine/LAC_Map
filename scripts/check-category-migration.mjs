@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { build } from 'esbuild';
+const result = await build({ entryPoints: ['src/domain/schemas.ts'], bundle: true, format: 'esm', platform: 'node', write: false });
+const schemas = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
+const buildings = JSON.parse(await readFile('FiveM_LAC/Data/buildings.json', 'utf8'));
+const markers = JSON.parse(await readFile('FiveM_LAC/Data/markers.json', 'utf8'));
+assert.equal(schemas.buildingsFileSchema.parse(buildings).buildings.length, buildings.buildings.length);
+assert.equal(schemas.markersFileSchema.parse(markers).markers.length, markers.markers.length);
+assert.equal(buildings.buildings.some(item => item.type === 'other'), false);
+const geometry = { type: 'Polygon', coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
+const legacy = { id: 'legacy', type: 'residence', units: [{ id: 'unit', entrances: [] }], geometry };
+const parsed = schemas.buildingsFileSchema.parse({ buildings: [legacy, { id: 'old', type: 'other', geometry }, { id: 'landmark', type: 'landmark', geometry }, { id: 'terminal', type: 'terminal', geometry }, { id: 'content', type: 'content', geometry }] }).buildings;
+assert.deepEqual(parsed[0].units, legacy.units);
+assert.equal(parsed[1].type, 'burglary');
+assert.equal(parsed[2].type, 'landmark');
+assert.equal(parsed[3].type, 'terminal');
+assert.equal(parsed[4].type, 'content');
+console.log('Category migration and legacy compatibility checks passed.');
+

@@ -21,16 +21,16 @@
       "originalFileName": "Oil_Station.png",
       "filePath": "Assets/images/icons/image_000003.png",
       "format": "png",
-      "fileSize": 4206,
-      "sha256": "eb1e0e54ac97833a95ebd44e5e3348863363b04f2cf95b1e89faad2982c8e5e4"
+      "fileSize": 3240,
+      "sha256": "db44b51d1d71abdb1de7caf35a592767118ac80d61dd88047e50fd3090637d28"
     },
     {
       "id": "image_000004",
       "originalFileName": "Bus.png",
       "filePath": "Assets/images/icons/image_000004.png",
       "format": "png",
-      "fileSize": 5050,
-      "sha256": "5a3f51675d3e1c9e4052d58399c26f6ffbff551efa89d2da231248a370db60ba"
+      "fileSize": 4581,
+      "sha256": "95107026b85e5bcb909653899cfb4296132324f31196910eba8d0a5d6191d789"
     },
     {
       "id": "image_000005",

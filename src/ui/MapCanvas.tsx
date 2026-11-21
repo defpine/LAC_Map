@@ -228,7 +228,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
         const selected = isSelected("building", feature.id);
         const buildingLayer = L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
           color: selected ? "#FFFFFF" : feature.isBurglaryTarget ? "#DC2626" : darken(color), dashArray: selected ? undefined : feature.isBurglaryTarget ? "5 4" : undefined,
-          weight: selected ? 3 : feature.isBurglaryTarget ? 2 : 1, fillColor: color, fillOpacity: selected ? 0.38 : feature.type === "other" ? 0.18 : 0.22,
+          weight: selected ? 3 : feature.isBurglaryTarget ? 2 : 1, fillColor: color, fillOpacity: selected ? 0.38 : feature.type === "burglary" ? 0.18 : 0.22,
         }).addTo(layers);
         bindFeatureLayer(buildingLayer as EditableLayer, "building", feature);
         if (visible.postalCode && zoom >= postalCodeMinZoom && feature.postalCode) {

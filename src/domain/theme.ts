@@ -34,5 +34,9 @@ export const buildingColors: Record<BuildingType, string> = {
   institution: "#3B82F6",
   shop: "#22C55E",
   residence: "#64748B",
-  other: "#9CA3AF",
+  burglary: "#EF4444",
+  landmark: "#9CA3AF",
+  terminal: "#8B5CF6",
+  content: "#FACC15",
 };
+

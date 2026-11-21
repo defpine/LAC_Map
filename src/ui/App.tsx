@@ -20,7 +20,7 @@ export function App() {
     zone: true,
     road: true,
     postalCode: true,
-    building: { institution: true, shop: true, residence: true, other: true },
+    building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true },
     marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true },
   });
   const [selection, setSelection] = useState<SelectedFeature | null>(null);
@@ -248,12 +248,12 @@ export function App() {
     }
     commitProject((current) => {
       if (kind === "marker" && geometry.type === "Point") {
-        const feature: MapMarker = { id: nextId(current.markers, "marker"), type: "landmark", name: "새 마커", geometry };
+        const feature: MapMarker = { id: nextId(current.markers, "marker"), type: "content", name: "새 마커", geometry };
         setSelection({ kind: "marker", feature });
         return { ...current, markers: [...current.markers, feature] };
       }
       if (kind === "building" && geometry.type === "Polygon") {
-        const feature: Building = { id: nextId(current.buildings, "building"), type: "other", name: "새 건물", geometry };
+        const feature: Building = { id: nextId(current.buildings, "building"), type: "burglary", name: "새 건물", geometry };
         setSelection({ kind: "building", feature });
         return { ...current, buildings: [...current.buildings, feature] };
       }
@@ -465,7 +465,7 @@ export function App() {
             {selection.kind === "road" && <p>폭: {selection.feature.width}px</p>}
             {editorMode && <div className="inspector-fields">
               <label>이름<input value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder="이름 없음" /></label>
-              <label>종류<select value={draftType} onChange={(event) => setDraftType(event.target.value)}>{typeOptions(selection.kind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+              <label>종류<select value={draftType} onChange={(event) => setDraftType(event.target.value)}>{!typeOptions(selection.kind).some(option => option.value === draftType) && <option value={draftType} disabled>기존 유형 ({draftType})</option>}{typeOptions(selection.kind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
               {selection.kind === "road" && <>
                 <label>기본 폭 (4–100)<input type="number" min="4" max="100" value={draftRoadWidth} onChange={(event) => setDraftRoadWidth(event.target.value)} /></label>
                 <label>사용자 색상 (선택)<input value={draftRoadColor} onChange={(event) => setDraftRoadColor(event.target.value)} placeholder="#RRGGBB · 비워두면 종류 기본색" /></label>
@@ -560,10 +560,10 @@ function ViewerBuildingInfo({ building }: { building: Building }) {
 
 function MapLegend({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   const entries = [
-    ["건물", [["기관", buildingColors.institution], ["상점", buildingColors.shop], ["주거", buildingColors.residence], ["기타", buildingColors.other]]],
+    ["건물", [["기관", buildingColors.institution], ["상점", buildingColors.shop], ["빈집털이", buildingColors.burglary], ["랜드마크", buildingColors.landmark], ["터미널", buildingColors.terminal], ["콘텐츠", buildingColors.content]]],
     ["도로", [["고속도로", roadStyles.highway.color], ["고속화도로", roadStyles.expressway.color], ["국도", roadStyles.national_road.color]]],
     ["지형", [["산", terrainColors.mountain], ["해변", terrainColors.beach], ["호수", terrainColors.lake], ["도시", terrainColors.city]]],
-    ["마커", [["기관", markerColors.institution], ["상점", markerColors.shop], ["NPC", markerColors.npc], ["차고", markerColors.garage], ["랜드마크", markerColors.landmark], ["콘텐츠", markerColors.content], ["버스 정류장", markerColors.bus_stop], ["주유소", markerColors.gas_station]]],
+    ["마커", [["기관", markerColors.institution], ["상점", markerColors.shop], ["NPC", markerColors.npc], ["차고", markerColors.garage], ["콘텐츠", markerColors.content], ["버스 정류장", markerColors.bus_stop], ["주유소", markerColors.gas_station]]],
   ] as const;
   return <aside className={`map-legend ${open ? "open" : ""}`} aria-label="지도 범례"><button type="button" onClick={onToggle} aria-expanded={open}>범례 <span>{open ? "−" : "+"}</span></button>{open && <div className="legend-panel">{entries.map(([title, items]) => <section key={title}><strong>{title}</strong>{items.map(([label, color]) => <span key={label}><i style={{ backgroundColor: color }} />{label}</span>)}</section>)}<p><i className="legend-selection" />선택 강조</p></div>}</aside>;
 }
@@ -590,13 +590,13 @@ function FilterGroup({ title, entries, value, onChange, onToggleAll }: { title: 
 }
 
 function allVisible(): Visibility {
-  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, postalCode: true, building: { institution: true, shop: true, residence: true, other: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true } };
+  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, postalCode: true, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true } };
 }
 
 function typedFilterEntries(project: MapProject, kind: "terrain" | "building" | "marker"): { type: string; label: string; count: number }[] {
-  const labels: Record<string, string> = { mountain: "산", beach: "해변", lake: "호수", city: "도시", institution: "기관", shop: "상점", residence: "주거", other: "기타", npc: "NPC", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" };
+  const labels: Record<string, string> = { mountain: "산", beach: "해변", lake: "호수", city: "도시", institution: "기관", shop: "상점", burglary: "빈집털이", terminal: "터미널", npc: "NPC", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" };
   const items = kind === "terrain" ? project.terrain : kind === "building" ? project.buildings : project.markers;
-  const types = kind === "terrain" ? ["mountain", "beach", "lake", "city"] : kind === "building" ? ["institution", "shop", "residence", "other"] : ["institution", "shop", "npc", "garage", "landmark", "content", "bus_stop", "gas_station"];
+  const types = kind === "terrain" ? ["mountain", "beach", "lake", "city"] : kind === "building" ? ["institution", "shop", "burglary", "landmark", "terminal", "content"] : ["institution", "shop", "npc", "garage", "content", "bus_stop", "gas_station"];
   return types.map((type) => ({ type, label: labels[type], count: items.filter((item) => item.type === type).length }));
 }
 
@@ -651,8 +651,8 @@ function typeOptions(kind: SelectedFeature["kind"]): { value: string; label: str
   if (kind === "terrain") return [{ value: "mountain", label: "산" }, { value: "beach", label: "해변" }, { value: "lake", label: "호수" }, { value: "city", label: "도시" }];
   if (kind === "zone") return [{ value: "jurisdiction", label: "관할" }, { value: "safe_zone", label: "안전 구역" }, { value: "pvp_zone", label: "PVP 구역" }];
   if (kind === "road") return [{ value: "highway", label: "고속도로" }, { value: "expressway", label: "자동차전용도로" }, { value: "national_road", label: "국도" }];
-  if (kind === "building") return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "residence", label: "주거" }, { value: "other", label: "기타" }];
-  return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "npc", label: "NPC" }, { value: "garage", label: "차고" }, { value: "landmark", label: "랜드마크" }, { value: "content", label: "콘텐츠" }, { value: "bus_stop", label: "버스 정류장" }, { value: "gas_station", label: "주유소" }];
+  if (kind === "building") return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "burglary", label: "빈집털이" }, { value: "landmark", label: "랜드마크" }, { value: "terminal", label: "터미널" }, { value: "content", label: "콘텐츠" }];
+  return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "npc", label: "NPC" }, { value: "garage", label: "차고" }, { value: "content", label: "콘텐츠" }, { value: "bus_stop", label: "버스 정류장" }, { value: "gas_station", label: "주유소" }];
 }
 
 function clampInteger(value: string, minimum: number, maximum: number, fallback: number): number {

@@ -38,7 +38,7 @@
     },
     {
       "id": "building_000002",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1001",
       "geometry": {
@@ -75,7 +75,7 @@
     },
     {
       "id": "building_000003",
-      "type": "other",
+      "type": "burglary",
       "name": "해안 절벽",
       "postalCode": "1002",
       "geometry": {
@@ -124,7 +124,7 @@
     },
     {
       "id": "building_000004",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1003",
       "geometry": {
@@ -165,7 +165,7 @@
     },
     {
       "id": "building_000005",
-      "type": "other",
+      "type": "burglary",
       "name": "들판",
       "postalCode": "1004",
       "geometry": {
@@ -194,7 +194,7 @@
     },
     {
       "id": "building_000006",
-      "type": "other",
+      "type": "content",
       "name": "건물/농장",
       "postalCode": "1005",
       "geometry": {
@@ -227,7 +227,7 @@
     },
     {
       "id": "building_000007",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "1006",
       "geometry": {
@@ -280,7 +280,7 @@
     },
     {
       "id": "building_000008",
-      "type": "other",
+      "type": "content",
       "name": "농장",
       "postalCode": "1007",
       "geometry": {
@@ -321,7 +321,7 @@
     },
     {
       "id": "building_000009",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "1008",
       "geometry": {
@@ -358,7 +358,7 @@
     },
     {
       "id": "building_000010",
-      "type": "other",
+      "type": "content",
       "name": "농장",
       "postalCode": "1009",
       "geometry": {
@@ -411,7 +411,7 @@
     },
     {
       "id": "building_000011",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "1010",
       "geometry": {
@@ -448,7 +448,7 @@
     },
     {
       "id": "building_000012",
-      "type": "other",
+      "type": "content",
       "name": "농장",
       "postalCode": "1011",
       "geometry": {
@@ -505,7 +505,7 @@
     },
     {
       "id": "building_000013",
-      "type": "other",
+      "type": "terminal",
       "name": "고속버스 터미널",
       "iconRef": "image_000004",
       "postalCode": "1012",
@@ -559,7 +559,7 @@
     },
     {
       "id": "building_000014",
-      "type": "other",
+      "type": "burglary",
       "name": "공사장",
       "postalCode": "1013",
       "geometry": {
@@ -592,7 +592,7 @@
     },
     {
       "id": "building_000015",
-      "type": "other",
+      "type": "burglary",
       "name": "공사장",
       "postalCode": "1014",
       "units": [],
@@ -626,7 +626,7 @@
     },
     {
       "id": "building_000016",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1015",
       "geometry": {
@@ -659,7 +659,7 @@
     },
     {
       "id": "building_000017",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1016",
       "geometry": {
@@ -692,7 +692,7 @@
     },
     {
       "id": "building_000018",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1017",
       "geometry": {
@@ -725,7 +725,7 @@
     },
     {
       "id": "building_000019",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1018",
       "geometry": {
@@ -758,7 +758,7 @@
     },
     {
       "id": "building_000020",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1019",
       "geometry": {
@@ -791,7 +791,7 @@
     },
     {
       "id": "building_000021",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1020",
       "geometry": {
@@ -824,7 +824,7 @@
     },
     {
       "id": "building_000022",
-      "type": "other",
+      "type": "burglary",
       "name": "창고",
       "postalCode": "1021",
       "geometry": {
@@ -857,7 +857,7 @@
     },
     {
       "id": "building_000023",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1022",
       "geometry": {
@@ -890,7 +890,7 @@
     },
     {
       "id": "building_000024",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1023",
       "geometry": {
@@ -923,7 +923,7 @@
     },
     {
       "id": "building_000025",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1024",
       "geometry": {
@@ -956,7 +956,7 @@
     },
     {
       "id": "building_000026",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1025",
       "geometry": {
@@ -989,7 +989,7 @@
     },
     {
       "id": "building_000027",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1026",
       "geometry": {
@@ -1022,7 +1022,7 @@
     },
     {
       "id": "building_000028",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1027",
       "geometry": {
@@ -1055,7 +1055,7 @@
     },
     {
       "id": "building_000029",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1028",
       "geometry": {
@@ -1088,7 +1088,7 @@
     },
     {
       "id": "building_000030",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1029",
       "geometry": {
@@ -1121,7 +1121,7 @@
     },
     {
       "id": "building_000031",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1030",
       "geometry": {
@@ -1154,7 +1154,7 @@
     },
     {
       "id": "building_000032",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1031",
       "geometry": {
@@ -1187,7 +1187,7 @@
     },
     {
       "id": "building_000033",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1032",
       "geometry": {
@@ -1220,7 +1220,7 @@
     },
     {
       "id": "building_000034",
-      "type": "other",
+      "type": "burglary",
       "name": "공터 주차장",
       "postalCode": "1033",
       "geometry": {
@@ -1253,7 +1253,7 @@
     },
     {
       "id": "building_000035",
-      "type": "other",
+      "type": "shop",
       "name": "건물",
       "postalCode": "1034",
       "geometry": {
@@ -1286,7 +1286,7 @@
     },
     {
       "id": "building_000036",
-      "type": "other",
+      "type": "burglary",
       "name": "공터",
       "postalCode": "1035",
       "geometry": {
@@ -1319,7 +1319,7 @@
     },
     {
       "id": "building_000037",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1036",
       "geometry": {
@@ -1352,7 +1352,7 @@
     },
     {
       "id": "building_000038",
-      "type": "other",
+      "type": "burglary",
       "name": "공터",
       "postalCode": "1037",
       "geometry": {
@@ -1432,7 +1432,7 @@
     },
     {
       "id": "building_000040",
-      "type": "other",
+      "type": "burglary",
       "name": "공터",
       "postalCode": "1039",
       "geometry": {
@@ -1473,7 +1473,7 @@
     },
     {
       "id": "building_000041",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1040",
       "geometry": {
@@ -1514,7 +1514,7 @@
     },
     {
       "id": "building_000042",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1041",
       "geometry": {
@@ -1547,7 +1547,7 @@
     },
     {
       "id": "building_000043",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1042",
       "geometry": {
@@ -1580,7 +1580,7 @@
     },
     {
       "id": "building_000044",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1043",
       "geometry": {
@@ -1629,7 +1629,7 @@
     },
     {
       "id": "building_000045",
-      "type": "other",
+      "type": "shop",
       "name": "건물",
       "postalCode": "1044",
       "geometry": {
@@ -1662,7 +1662,7 @@
     },
     {
       "id": "building_000046",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1045",
       "geometry": {
@@ -1711,7 +1711,7 @@
     },
     {
       "id": "building_000047",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1046",
       "geometry": {
@@ -1777,7 +1777,7 @@
     },
     {
       "id": "building_000049",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1048",
       "geometry": {
@@ -1810,7 +1810,7 @@
     },
     {
       "id": "building_000050",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1049",
       "geometry": {
@@ -1863,7 +1863,7 @@
     },
     {
       "id": "building_000051",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1050",
       "geometry": {
@@ -1896,7 +1896,7 @@
     },
     {
       "id": "building_000052",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1051",
       "geometry": {
@@ -1929,7 +1929,7 @@
     },
     {
       "id": "building_000053",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1052",
       "geometry": {
@@ -1962,7 +1962,7 @@
     },
     {
       "id": "building_000054",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1053",
       "geometry": {
@@ -1995,7 +1995,7 @@
     },
     {
       "id": "building_000055",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1054",
       "geometry": {
@@ -2028,7 +2028,7 @@
     },
     {
       "id": "building_000056",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1055",
       "geometry": {
@@ -2061,7 +2061,7 @@
     },
     {
       "id": "building_000057",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1056",
       "geometry": {
@@ -2128,7 +2128,7 @@
     },
     {
       "id": "building_000059",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1058",
       "geometry": {
@@ -2161,7 +2161,7 @@
     },
     {
       "id": "building_000060",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1059",
       "geometry": {
@@ -2228,7 +2228,7 @@
     },
     {
       "id": "building_000062",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1061",
       "geometry": {
@@ -2269,7 +2269,7 @@
     },
     {
       "id": "building_000063",
-      "type": "other",
+      "type": "burglary",
       "name": "공사장",
       "postalCode": "1062",
       "geometry": {
@@ -2302,7 +2302,7 @@
     },
     {
       "id": "building_000064",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1063",
       "geometry": {
@@ -2330,8 +2330,8 @@
               0.8743489583333334
             ],
             [
-              0.47355143225097657,
-              0.8708224826660156
+              0.47362340954589843,
+              0.8707230009765624
             ],
             [
               0.46883138024902343,
@@ -2343,7 +2343,7 @@
     },
     {
       "id": "building_000065",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1064",
       "geometry": {
@@ -2384,7 +2384,7 @@
     },
     {
       "id": "building_000066",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1065",
       "geometry": {
@@ -2425,7 +2425,7 @@
     },
     {
       "id": "building_000067",
-      "type": "other",
+      "type": "burglary",
       "name": "공터",
       "postalCode": "1066",
       "geometry": {
@@ -2458,7 +2458,7 @@
     },
     {
       "id": "building_000068",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1067",
       "geometry": {
@@ -2491,7 +2491,7 @@
     },
     {
       "id": "building_000069",
-      "type": "other",
+      "type": "burglary",
       "name": "부두가",
       "postalCode": "1068",
       "geometry": {
@@ -2524,7 +2524,7 @@
     },
     {
       "id": "building_000070",
-      "type": "other",
+      "type": "burglary",
       "name": "공터",
       "postalCode": "1069",
       "geometry": {
@@ -2557,7 +2557,7 @@
     },
     {
       "id": "building_000071",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1070",
       "geometry": {
@@ -2590,7 +2590,7 @@
     },
     {
       "id": "building_000072",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1071",
       "geometry": {
@@ -2627,7 +2627,7 @@
     },
     {
       "id": "building_000073",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1072",
       "geometry": {
@@ -2660,7 +2660,7 @@
     },
     {
       "id": "building_000074",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1073",
       "geometry": {
@@ -2693,7 +2693,7 @@
     },
     {
       "id": "building_000075",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1074",
       "geometry": {
@@ -2734,7 +2734,7 @@
     },
     {
       "id": "building_000076",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1075",
       "geometry": {
@@ -2767,7 +2767,7 @@
     },
     {
       "id": "building_000077",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1076",
       "geometry": {
@@ -2800,7 +2800,7 @@
     },
     {
       "id": "building_000078",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "1077",
       "geometry": {
@@ -2833,7 +2833,7 @@
     },
     {
       "id": "building_000079",
-      "type": "other",
+      "type": "burglary",
       "name": "다리",
       "postalCode": "1078",
       "geometry": {
@@ -2866,7 +2866,7 @@
     },
     {
       "id": "building_000080",
-      "type": "other",
+      "type": "burglary",
       "name": "주차장",
       "postalCode": "1079",
       "geometry": {
@@ -2899,7 +2899,7 @@
     },
     {
       "id": "building_000081",
-      "type": "other",
+      "type": "terminal",
       "name": "건물",
       "postalCode": "1080",
       "geometry": {
@@ -2956,7 +2956,7 @@
     },
     {
       "id": "building_000082",
-      "type": "other",
+      "type": "content",
       "name": "벌목장",
       "postalCode": "1081",
       "geometry": {
@@ -3069,7 +3069,7 @@
     },
     {
       "id": "building_000083",
-      "type": "other",
+      "type": "content",
       "name": "벌목장 건물",
       "postalCode": "1082",
       "geometry": {
@@ -3114,7 +3114,7 @@
     },
     {
       "id": "building_000086",
-      "type": "other",
+      "type": "landmark",
       "name": "알트루이즘 마을",
       "postalCode": "1085",
       "geometry": {
@@ -3167,7 +3167,7 @@
     },
     {
       "id": "building_000087",
-      "type": "other",
+      "type": "landmark",
       "name": "벌목장 터널 출입구",
       "postalCode": "1086",
       "geometry": {
@@ -3200,7 +3200,7 @@
     },
     {
       "id": "building_000088",
-      "type": "other",
+      "type": "landmark",
       "name": "칠리아드산 전망대",
       "postalCode": "1087",
       "geometry": {
@@ -3233,7 +3233,7 @@
     },
     {
       "id": "building_000089",
-      "type": "other",
+      "type": "landmark",
       "name": "벌목장 터널 출입구",
       "postalCode": "1088",
       "geometry": {
@@ -3266,7 +3266,7 @@
     },
     {
       "id": "building_000090",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "2000",
       "geometry": {
@@ -3335,7 +3335,7 @@
     },
     {
       "id": "building_000091",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "2001",
       "geometry": {
@@ -3388,7 +3388,7 @@
     },
     {
       "id": "building_000092",
-      "type": "other",
+      "type": "burglary",
       "name": "공터",
       "postalCode": "2002",
       "geometry": {
@@ -3421,7 +3421,7 @@
     },
     {
       "id": "building_000093",
-      "type": "other",
+      "type": "burglary",
       "name": "창고",
       "postalCode": "2003",
       "geometry": {
@@ -3454,7 +3454,7 @@
     },
     {
       "id": "building_000094",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "2004",
       "geometry": {
@@ -3491,7 +3491,7 @@
     },
     {
       "id": "building_000095",
-      "type": "other",
+      "type": "burglary",
       "name": "농장",
       "postalCode": "2005",
       "geometry": {
@@ -3571,7 +3571,7 @@
     },
     {
       "id": "building_000097",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "2007",
       "geometry": {
@@ -3604,20 +3604,20 @@
     },
     {
       "id": "building_000098",
-      "type": "shop",
-      "name": "상가",
+      "type": "burglary",
+      "name": "건물",
       "postalCode": "2008",
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              0.6468098958740235,
-              0.734429253499349
+              0.6466471353759765,
+              0.736382378499349
             ],
             [
-              0.6503092447509765,
-              0.734917534749349
+              0.6500651041259765,
+              0.7366536458333334
             ],
             [
               0.64892578125,
@@ -3628,8 +3628,8 @@
               0.7399631076660156
             ],
             [
-              0.6468098958740235,
-              0.734429253499349
+              0.6466471353759765,
+              0.736382378499349
             ]
           ]
         ]
@@ -3637,7 +3637,7 @@
     },
     {
       "id": "building_000099",
-      "type": "other",
+      "type": "burglary",
       "name": "건물",
       "postalCode": "2009",
       "geometry": {
@@ -3667,6 +3667,411 @@
           ]
         ]
       }
+    },
+    {
+      "id": "building_000100",
+      "type": "shop",
+      "name": "옷가게",
+      "iconRef": "image_000008",
+      "postalCode": "2010",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6468912760009765,
+              0.7345920139160156
+            ],
+            [
+              0.6504720052490235,
+              0.7349717881673178
+            ],
+            [
+              0.6500651041259765,
+              0.7366536458333334
+            ],
+            [
+              0.6466471353759765,
+              0.736382378499349
+            ],
+            [
+              0.6468912760009765,
+              0.7345920139160156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000101",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2011",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.645751953125,
+              0.7330186631673178
+            ],
+            [
+              0.64599609375,
+              0.7311740451660156
+            ],
+            [
+              0.6421712239990235,
+              0.730523003499349
+            ],
+            [
+              0.642333984375,
+              0.7325303819173178
+            ],
+            [
+              0.645751953125,
+              0.7330186631673178
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000102",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2012",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6468912760009765,
+              0.7345920139160156
+            ],
+            [
+              0.647216796875,
+              0.7310655381673178
+            ],
+            [
+              0.6475423177490235,
+              0.7302517360839844
+            ],
+            [
+              0.6529947916259765,
+              0.7302517360839844
+            ],
+            [
+              0.6532389322509765,
+              0.7349717881673178
+            ],
+            [
+              0.6504720052490235,
+              0.7349717881673178
+            ],
+            [
+              0.6468912760009765,
+              0.7345920139160156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000103",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2013",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.64599609375,
+              0.7311740451660156
+            ],
+            [
+              0.647216796875,
+              0.7287326389160156
+            ],
+            [
+              0.6433919271240235,
+              0.7279188368326822
+            ],
+            [
+              0.6421712239990235,
+              0.730523003499349
+            ],
+            [
+              0.64599609375,
+              0.7311740451660156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000104",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2014",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6480305989990235,
+              0.729058159749349
+            ],
+            [
+              0.6492513021240235,
+              0.7268880208333334
+            ],
+            [
+              0.6526692708740235,
+              0.7265625
+            ],
+            [
+              0.6537272135009765,
+              0.7273763020833334
+            ],
+            [
+              0.652099609375,
+              0.72998046875
+            ],
+            [
+              0.6480305989990235,
+              0.729058159749349
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000105",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2015",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6482747396240235,
+              0.7263997395833334
+            ],
+            [
+              0.6480305989990235,
+              0.7224392360839844
+            ],
+            [
+              0.644775390625,
+              0.7224392360839844
+            ],
+            [
+              0.6448567708740235,
+              0.7263997395833334
+            ],
+            [
+              0.6482747396240235,
+              0.7263997395833334
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000106",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2016",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6502278646240235,
+              0.725043402750651
+            ],
+            [
+              0.650390625,
+              0.7224392360839844
+            ],
+            [
+              0.6520182291259765,
+              0.720648871500651
+            ],
+            [
+              0.6551106771240235,
+              0.7219509548339844
+            ],
+            [
+              0.6537272135009765,
+              0.7233615451660156
+            ],
+            [
+              0.6537272135009765,
+              0.72509765625
+            ],
+            [
+              0.6502278646240235,
+              0.725043402750651
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000107",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2017",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.657470703125,
+              0.7200520833333334
+            ],
+            [
+              0.657470703125,
+              0.7189127604166666
+            ],
+            [
+              0.6564127603759765,
+              0.7169053819173178
+            ],
+            [
+              0.6630045572509765,
+              0.7175021701660156
+            ],
+            [
+              0.6622721353759765,
+              0.7204318576660156
+            ],
+            [
+              0.657470703125,
+              0.7200520833333334
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000108",
+      "type": "burglary",
+      "name": "공터",
+      "postalCode": "2018",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6678873697509765,
+              0.722222222249349
+            ],
+            [
+              0.6680501302490235,
+              0.7180447048339844
+            ],
+            [
+              0.6722005208740235,
+              0.718315972249349
+            ],
+            [
+              0.6717936197509765,
+              0.719780815999349
+            ],
+            [
+              0.6727701822509765,
+              0.722222222249349
+            ],
+            [
+              0.6678873697509765,
+              0.722222222249349
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000109",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2019",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6788736978759765,
+              0.72265625
+            ],
+            [
+              0.6734212239990235,
+              0.7215711805826822
+            ],
+            [
+              0.6729329427490235,
+              0.7199435764160156
+            ],
+            [
+              0.6732584635009765,
+              0.71826171875
+            ],
+            [
+              0.6787109375,
+              0.719184027750651
+            ],
+            [
+              0.6808268228759765,
+              0.7198893229166666
+            ],
+            [
+              0.682861328125,
+              0.721137152750651
+            ],
+            [
+              0.6788736978759765,
+              0.72265625
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "building_000110",
+      "type": "burglary",
+      "name": "건물",
+      "postalCode": "2020",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.6788736978759765,
+              0.72265625
+            ],
+            [
+              0.673828125,
+              0.7243923610839844
+            ],
+            [
+              0.674072265625,
+              0.7230360243326822
+            ],
+            [
+              0.6734212239990235,
+              0.7215711805826822
+            ],
+            [
+              0.6788736978759765,
+              0.72265625
+            ]
+          ]
+        ]
+      }
     }
   ]
 }
+

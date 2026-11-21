@@ -29,7 +29,7 @@ export const geographyFileSchema = z.object({
 
 export const buildingsFileSchema = z.object({
   buildings: z.array(z.object({
-    id: z.string(), type: z.enum(["institution", "shop", "residence", "other"]), name: z.string().optional(),
+    id: z.string(), type: z.enum(["institution", "shop", "residence", "other", "burglary", "landmark", "terminal", "content"]).transform(type => type === "other" ? "burglary" as const : type), name: z.string().optional(),
     color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
   }).passthrough()),
 });

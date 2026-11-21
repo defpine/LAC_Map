@@ -3,7 +3,7 @@ import type { shopTypes } from "./schemas";
 export type TerrainType = "mountain" | "beach" | "lake" | "city";
 export type ZoneType = "jurisdiction" | "safe_zone" | "pvp_zone";
 export type RoadType = "highway" | "expressway" | "national_road";
-export type BuildingType = "institution" | "shop" | "residence" | "other";
+export type BuildingType = "institution" | "shop" | "residence" | "burglary" | "landmark" | "terminal" | "content";
 export type MarkerType =
   | "institution"
   | "shop"
