@@ -46,7 +46,7 @@
     },
     {
       "id": "marker_000004",
-      "type": "bus_stop",
+      "type": "terminal",
       "name": "고속버스 터미널  (북부버스터미널)",
       "size": 24,
       "iconRef": "image_000004",
@@ -123,12 +123,13 @@
       "name": "윌리스 마트",
       "size": 24,
       "iconRef": "image_000001",
+      "entityRef": "shop_000002",
       "shopType": "supermarket",
       "geometry": {
         "type": "Point",
         "coordinates": [
-          0.4532537678222656,
-          0.8609878802897136
+          0.4512939453125,
+          0.860595703125
         ]
       }
     },
@@ -156,15 +157,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          0.4495102783203125,
-          0.8531211268717448
+          0.449951171875,
+          0.85302734375
         ]
       }
     },
     {
       "id": "marker_000012",
       "type": "institution",
-      "name": "응급의료시설",
+      "name": "응급의료시설 (팔레토 베이)",
       "size": 24,
       "iconRef": "image_000009",
       "geometry": {
@@ -202,6 +203,63 @@
         "coordinates": [
           0.4228515625,
           0.8288302951660156
+        ]
+      }
+    },
+    {
+      "id": "marker_000015",
+      "type": "shop",
+      "name": "LTD 주유소 편의점",
+      "size": 24,
+      "iconRef": "image_000002",
+      "shopType": "convenience",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.650146484375,
+          0.7427300346679687
+        ]
+      }
+    },
+    {
+      "id": "marker_000016",
+      "type": "gas_station",
+      "name": "LTD 주유소",
+      "size": 24,
+      "iconRef": "image_000003",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.6486002603759765,
+          0.7434353298339844
+        ]
+      }
+    },
+    {
+      "id": "marker_000017",
+      "type": "shop",
+      "name": "할인점 옷가게",
+      "size": 24,
+      "iconRef": "image_000008",
+      "shopType": "clothing",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.6485595703125,
+          0.7356228298339844
+        ]
+      }
+    },
+    {
+      "id": "marker_000018",
+      "type": "institution",
+      "name": "팔레토 베이 소방서",
+      "size": 24,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.41861979162597657,
+          0.8309461805826822
         ]
       }
     }

@@ -11,7 +11,7 @@ export type MarkerType =
   | "garage"
   | "landmark"
   | "content"
-  | "bus_stop"
+  | "terminal"
   | "gas_station";
 
 export type Position = readonly [number, number];
@@ -82,7 +82,7 @@ export type Institution = { id: string; type: "institution"; name?: string; desc
 export type ShopType = (typeof shopTypes)[number];
 export type Shop = { id: string; type: ShopType; name?: string; description?: string; items?: readonly string[]; customFields?: readonly CustomField[] };
 export type Npc = { id: string; type: "npc"; name?: string; description?: string; quests?: readonly string[]; location?: DetailLocation; customFields?: readonly CustomField[] };
-export type FacilityType = "garage" | "landmark" | "content" | "bus_stop" | "gas_station";
+export type FacilityType = "garage" | "landmark" | "content" | "terminal" | "gas_station";
 export type Facility = { id: string; type: FacilityType; name?: string; description?: string; location?: DetailLocation; customFields?: readonly CustomField[] };
 
 export type MapTileProvider = (level: number, x: number, y: number) => Promise<string | null>;

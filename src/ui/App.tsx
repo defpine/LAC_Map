@@ -21,7 +21,7 @@ export function App() {
     road: true,
     postalCode: true,
     building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true },
-    marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true },
+    marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true },
   });
   const [selection, setSelection] = useState<SelectedFeature | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,6 +112,18 @@ export function App() {
   useEffect(() => {
     if (editorMode) setSearchFocus(null);
   }, [editorMode]);
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Delete" || event.repeat || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (!editorMode || !selection || drawKind || detailManagerOpen || deleteConfirm || saving) return;
+      const target = event.target;
+      if (target instanceof Element && (target.closest("input, textarea, select, [contenteditable]:not([contenteditable='false'])") || (target instanceof HTMLElement && target.isContentEditable))) return;
+      event.preventDefault();
+      setDeleteConfirm(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [editorMode, selection, drawKind, detailManagerOpen, deleteConfirm, saving]);
   const selectedDetail = useMemo(() => detailSelection ? findDetail(project, detailSelection.kind, detailSelection.id) : null, [detailSelection, project]);
   const searchResults = useMemo(() => searchFeatures(project, searchQuery), [project, searchQuery]);
   useEffect(() => {
@@ -563,7 +575,7 @@ function MapLegend({ open, onToggle }: { open: boolean; onToggle: () => void }) 
     ["건물", [["기관", buildingColors.institution], ["상점", buildingColors.shop], ["빈집털이", buildingColors.burglary], ["랜드마크", buildingColors.landmark], ["터미널", buildingColors.terminal], ["콘텐츠", buildingColors.content]]],
     ["도로", [["고속도로", roadStyles.highway.color], ["고속화도로", roadStyles.expressway.color], ["국도", roadStyles.national_road.color]]],
     ["지형", [["산", terrainColors.mountain], ["해변", terrainColors.beach], ["호수", terrainColors.lake], ["도시", terrainColors.city]]],
-    ["마커", [["기관", markerColors.institution], ["상점", markerColors.shop], ["NPC", markerColors.npc], ["차고", markerColors.garage], ["콘텐츠", markerColors.content], ["버스 정류장", markerColors.bus_stop], ["주유소", markerColors.gas_station]]],
+    ["마커", [["기관", markerColors.institution], ["상점", markerColors.shop], ["NPC", markerColors.npc], ["차고", markerColors.garage], ["콘텐츠", markerColors.content], ["터미널", markerColors.terminal], ["주유소", markerColors.gas_station]]],
   ] as const;
   return <aside className={`map-legend ${open ? "open" : ""}`} aria-label="지도 범례"><button type="button" onClick={onToggle} aria-expanded={open}>범례 <span>{open ? "−" : "+"}</span></button>{open && <div className="legend-panel">{entries.map(([title, items]) => <section key={title}><strong>{title}</strong>{items.map(([label, color]) => <span key={label}><i style={{ backgroundColor: color }} />{label}</span>)}</section>)}<p><i className="legend-selection" />선택 강조</p></div>}</aside>;
 }
@@ -590,13 +602,13 @@ function FilterGroup({ title, entries, value, onChange, onToggleAll }: { title: 
 }
 
 function allVisible(): Visibility {
-  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, postalCode: true, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true } };
+  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, postalCode: true, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true } };
 }
 
 function typedFilterEntries(project: MapProject, kind: "terrain" | "building" | "marker"): { type: string; label: string; count: number }[] {
   const labels: Record<string, string> = { mountain: "산", beach: "해변", lake: "호수", city: "도시", institution: "기관", shop: "상점", burglary: "빈집털이", terminal: "터미널", npc: "NPC", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" };
   const items = kind === "terrain" ? project.terrain : kind === "building" ? project.buildings : project.markers;
-  const types = kind === "terrain" ? ["mountain", "beach", "lake", "city"] : kind === "building" ? ["institution", "shop", "burglary", "landmark", "terminal", "content"] : ["institution", "shop", "npc", "garage", "content", "bus_stop", "gas_station"];
+  const types = kind === "terrain" ? ["mountain", "beach", "lake", "city"] : kind === "building" ? ["institution", "shop", "burglary", "landmark", "terminal", "content"] : ["institution", "shop", "npc", "garage", "content", "terminal", "gas_station"];
   return types.map((type) => ({ type, label: labels[type], count: items.filter((item) => item.type === type).length }));
 }
 
@@ -652,7 +664,7 @@ function typeOptions(kind: SelectedFeature["kind"]): { value: string; label: str
   if (kind === "zone") return [{ value: "jurisdiction", label: "관할" }, { value: "safe_zone", label: "안전 구역" }, { value: "pvp_zone", label: "PVP 구역" }];
   if (kind === "road") return [{ value: "highway", label: "고속도로" }, { value: "expressway", label: "자동차전용도로" }, { value: "national_road", label: "국도" }];
   if (kind === "building") return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "burglary", label: "빈집털이" }, { value: "landmark", label: "랜드마크" }, { value: "terminal", label: "터미널" }, { value: "content", label: "콘텐츠" }];
-  return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "npc", label: "NPC" }, { value: "garage", label: "차고" }, { value: "content", label: "콘텐츠" }, { value: "bus_stop", label: "버스 정류장" }, { value: "gas_station", label: "주유소" }];
+  return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "npc", label: "NPC" }, { value: "garage", label: "차고" }, { value: "content", label: "콘텐츠" }, { value: "terminal", label: "터미널" }, { value: "gas_station", label: "주유소" }];
 }
 
 function clampInteger(value: string, minimum: number, maximum: number, fallback: number): number {
@@ -695,16 +707,16 @@ function detailKindLabel(kind: DetailKind): string {
   return ({ institution: "기관", shop: "상점", npc: "NPC", facility: "시설" })[kind];
 }
 function detailTypeLabel(type: string): string {
-  return ({ institution: "기관", npc: "NPC", clothing: "의류점", convenience: "편의점", restaurant: "음식점", bar: "바", club: "클럽", street_vendor: "노점", gun_store: "총포상", car_dealership: "차량 판매점", jewelry_store: "보석상", premium_shop: "프리미엄 상점", tattoo_shop: "타투샵", supermarket: "마트", pawn_shop: "전당포", pet_shop: "펫샵", furniture_store: "가구점", ifruit_store: "iFruit 스토어", hair_salon: "미용실", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" }[type] ?? type);
+  return ({ institution: "기관", npc: "NPC", clothing: "의류점", convenience: "편의점", restaurant: "음식점", bar: "바", club: "클럽", street_vendor: "노점", gun_store: "총포상", car_dealership: "차량 판매점", jewelry_store: "보석상", premium_shop: "프리미엄 상점", tattoo_shop: "타투샵", supermarket: "마트", pawn_shop: "전당포", pet_shop: "펫샵", furniture_store: "가구점", ifruit_store: "iFruit 스토어", hair_salon: "미용실", garage: "차고", landmark: "랜드마크", content: "콘텐츠", terminal: "터미널", gas_station: "주유소" }[type] ?? type);
 }
 function detailTypeOptions(kind: "shop" | "facility"): { value: string; label: string }[] {
   return kind === "shop"
     ? shopTypes.map((value) => ({ value, label: detailTypeLabel(value) }))
-    : ["garage", "landmark", "content", "bus_stop", "gas_station"].map((value) => ({ value, label: detailTypeLabel(value) }));
+    : ["garage", "landmark", "content", "terminal", "gas_station"].map((value) => ({ value, label: detailTypeLabel(value) }));
 }
 
 function hasLocation(detail: DetailRecord | null | undefined): detail is Npc | Facility {
-  return Boolean(detail && (detail.type === "npc" || ["garage", "landmark", "content", "bus_stop", "gas_station"].includes(detail.type)));
+  return Boolean(detail && (detail.type === "npc" || ["garage", "landmark", "content", "terminal", "gas_station"].includes(detail.type)));
 }
 function draftLocation(type: "building" | "free_text", value: string): DetailLocation | undefined {
   const text = value.trim();
@@ -725,7 +737,7 @@ function availableMarkers(project: MapProject, detail: DetailRecord): MapMarker[
   return project.markers.filter((marker) => (!marker.entityRef || marker.entityRef === detail.id) && markerMatchesDetail(marker, detail));
 }
 function isFacilityDetail(detail: DetailRecord): detail is Facility {
-  return ["garage", "landmark", "content", "bus_stop", "gas_station"].includes(detail.type);
+  return ["garage", "landmark", "content", "terminal", "gas_station"].includes(detail.type);
 }
 function markerMatchesDetail(marker: MapMarker, detail: DetailRecord): boolean {
   if (detail.type === "institution") return marker.type === "institution";

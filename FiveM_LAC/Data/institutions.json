@@ -40,6 +40,12 @@
       "type": "institution",
       "name": "LS 메디컬 센터",
       "customFields": []
+    },
+    {
+      "id": "institution_000007",
+      "type": "institution",
+      "name": "응급의료시설 (팔레토 베이)",
+      "customFields": []
     }
   ]
 }

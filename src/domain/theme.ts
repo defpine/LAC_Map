@@ -7,7 +7,7 @@ export const markerColors: Record<MarkerType, string> = {
   garage: "#14B8A6",
   landmark: "#F59E0B",
   content: "#6366F1",
-  bus_stop: "#0EA5E9",
+  terminal: "#0EA5E9",
   gas_station: "#D97706",
 };
 

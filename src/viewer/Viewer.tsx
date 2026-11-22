@@ -6,7 +6,7 @@ import { PopupBanner } from "../ui/PopupBanner";
 import { loadProject } from "./loadProject";
 
 const labels: Record<string, string> = { mountain: "산", beach: "해변", lake: "호수", city: "도시", institution: "기관", shop: "상점", residence: "주거", burglary: "빈집털이", terminal: "터미널", npc: "NPC", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소", highway: "고속도로", expressway: "도시고속도로", national_road: "일반도로", jurisdiction: "관할 구역", safe_zone: "안전 구역", pvp_zone: "PVP 구역" };
-const initialVisibility = (): Visibility => ({ terrain: { mountain: true, beach: true, lake: true, city: true }, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, bus_stop: true, gas_station: true }, zone: true, road: true, postalCode: true });
+const initialVisibility = (): Visibility => ({ terrain: { mountain: true, beach: true, lake: true, city: true }, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true }, zone: true, road: true, postalCode: true });
 const noop = () => {};
 function featureColor(selection: SelectedFeature): string {
   if (selection.kind === "marker") return selection.feature.color ?? markerColors[selection.feature.type];

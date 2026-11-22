@@ -5,8 +5,11 @@ const result = await build({ entryPoints: ['src/domain/schemas.ts'], bundle: tru
 const schemas = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
 const buildings = JSON.parse(await readFile('FiveM_LAC/Data/buildings.json', 'utf8'));
 const markers = JSON.parse(await readFile('FiveM_LAC/Data/markers.json', 'utf8'));
+const facilities = JSON.parse(await readFile('FiveM_LAC/Data/facilities.json', 'utf8'));
 assert.equal(schemas.buildingsFileSchema.parse(buildings).buildings.length, buildings.buildings.length);
 assert.equal(schemas.markersFileSchema.parse(markers).markers.length, markers.markers.length);
+const legacyMarker = { id: 'legacy-marker', type: 'bus_stop', entityRef: 'facility-1', geometry: { type: 'Point', coordinates: [0.5, 0.5] } };
+assert.deepEqual(schemas.markersFileSchema.parse({ markers: [legacyMarker] }).markers[0], { ...legacyMarker, type: 'terminal' });
 assert.equal(buildings.buildings.some(item => item.type === 'other'), false);
 const geometry = { type: 'Polygon', coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
 const legacy = { id: 'legacy', type: 'residence', units: [{ id: 'unit', entrances: [] }], geometry };
@@ -16,5 +19,8 @@ assert.equal(parsed[1].type, 'burglary');
 assert.equal(parsed[2].type, 'landmark');
 assert.equal(parsed[3].type, 'terminal');
 assert.equal(parsed[4].type, 'content');
+assert.deepEqual(schemas.facilitiesFileSchema.parse({ facilities: [{ id: 'legacy', type: 'bus_stop', location: { type: 'building', buildingRef: 'building_1' } }] }).facilities, [{ id: 'legacy', type: 'terminal', location: { type: 'building', buildingRef: 'building_1' } }]);
+assert.equal(schemas.facilitiesFileSchema.parse(facilities).facilities.length, facilities.facilities.length);
+for (const marker of markers.markers.filter(item => item.entityRef?.startsWith('facility_'))) assert.ok(facilities.facilities.some(item => item.id === marker.entityRef));
 console.log('Category migration and legacy compatibility checks passed.');
 
