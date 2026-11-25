@@ -3113,6 +3113,7 @@
       "id": "zone_000010",
       "type": "jurisdiction",
       "name": "미러파크",
+      "description": "(AKA : 부촌)",
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -3303,8 +3304,7 @@
             ]
           ]
         ]
-      },
-      "description": "(AKA : 부촌)"
+      }
     },
     {
       "id": "zone_000011",
@@ -4137,7 +4137,7 @@
     {
       "id": "zone_000016",
       "type": "jurisdiction",
-      "name": "새 구역",
+      "name": "리틀 서울",
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -5767,7 +5767,7 @@
     {
       "id": "road_000002",
       "type": "highway",
-      "name": "세노라 고속도로",
+      "name": "세뇨라 고속도로",
       "width": 30,
       "color": "#00BB00",
       "geometry": {
