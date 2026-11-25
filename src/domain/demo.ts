@@ -45,10 +45,7 @@ export const demoProject: MapProject = {
       geometry: { type: "Polygon", coordinates: [[[0.47, 0.52], [0.52, 0.52], [0.52, 0.57], [0.47, 0.57], [0.47, 0.52]]] },
     },
   ],
-  markers: [
-    { id: "marker_000001", type: "shop", name: "의류점", geometry: { type: "Point", coordinates: [0.495, 0.545] } },
-    { id: "marker_000002", type: "garage", name: "중앙 차고", geometry: { type: "Point", coordinates: [0.30, 0.61] } },
-  ],
+  markers: [],
   institutions: [],
   shops: [],
   npcs: [],

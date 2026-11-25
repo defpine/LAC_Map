@@ -21,6 +21,8 @@ export type LineGeometry = { type: "LineString"; coordinates: readonly Position[
 export type PointGeometry = { type: "Point"; coordinates: Position };
 
 export type Terrain = {
+  bannerRef?: string;
+  description?: string;
   id: string;
   type: TerrainType;
   name?: string;
@@ -28,6 +30,8 @@ export type Terrain = {
 };
 
 export type Zone = {
+  bannerRef?: string;
+  description?: string;
   id: string;
   type: ZoneType;
   name?: string;
@@ -44,6 +48,8 @@ export type Road = {
 };
 
 export type Building = {
+  bannerRef?: string;
+  description?: string;
   color?: string;
   iconRef?: string;
   id: string;

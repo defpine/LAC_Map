@@ -1,6 +1,5 @@
 export const requiredJsonFiles = [
   "buildings.json",
-  "markers.json",
   "geography.json",
   "institutions.json",
   "shops.json",
@@ -62,3 +61,4 @@ async function childDirectory(root: FileSystemDirectoryHandle, name: string, err
     return null;
   }
 }
+

@@ -5,7 +5,7 @@ import ts from 'typescript';
 const schemaSource = await readFile('src/domain/schemas.ts', 'utf8');
 const compiled = ts.transpileModule(schemaSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText.replace('from "zod"', `from ${JSON.stringify(import.meta.resolve('zod'))}`);
 const schemas = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
-for (const name of ['project','geography','buildings','markers','institutions','shops','npcs','facilities']) {
+for (const name of ['project','geography','buildings','institutions','shops','npcs','facilities']) {
   schemas[`${name}FileSchema`].parse(JSON.parse(await readFile(`dist-viewer/Data/${name}.json`, 'utf8')));
 }
 const iconData = schemas.iconsFileSchema.parse(JSON.parse(await readFile('dist-viewer/Data/images.json', 'utf8')));
@@ -33,6 +33,7 @@ if (image.tileDirectory) for (let level = 0; level <= 5; level++) {
     await access(path.join(root, image.tileDirectory, `level_${level}/${x}_${y}.png`)); tiles++;
   }
 }
-for (const name of ['geography','buildings','markers','institutions','shops','npcs','facilities']) JSON.parse(await readFile(path.join(root, `Data/${name}.json`), 'utf8'));
+for (const name of ['geography','buildings','institutions','shops','npcs','facilities']) JSON.parse(await readFile(path.join(root, `Data/${name}.json`), 'utf8'));
 assert(!(await readdir(root)).includes('Backup'));
 console.log(`Viewer artifact checks passed; ${tiles} tiles, JSON and asset references verified; no Editor imports.`);
+

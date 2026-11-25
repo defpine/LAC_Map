@@ -14,6 +14,7 @@ export type Visibility = {
   terrain: Record<Terrain["type"], boolean>;
   zone: boolean;
   road: boolean;
+  name: boolean;
   postalCode: boolean;
   building: Record<Building["type"], boolean>;
   marker: Record<MapMarker["type"], boolean>;
@@ -56,6 +57,8 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
   // Postal labels are useful only after the map has enough room to avoid
   // overlapping every building. This is roughly four times past a full-map view.
   const postalCodeMinZoom = -1.5;
+  const buildingNameMinZoom = -2.5;
+  const regionNameMinZoom = -4;
 
   useEffect(() => {
     drawKindRef.current = drawKind;
@@ -168,6 +171,14 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     activeEditLayerRef.current?.pm.disable();
     activeEditLayerRef.current = null;
     const { width, height } = project.image;
+    const nameLabels: { position: L.LatLng; name: string; withPostalCode: boolean; priority: number }[] = [];
+    const collectName = (kind: "zone" | "terrain" | "building", feature: Zone | Terrain | Building, layer: L.Polygon) => {
+      const name = feature.name?.trim();
+      if (!visible.name || !name || zoom < (kind === "building" ? buildingNameMinZoom : regionNameMinZoom)) return;
+      const withPostalCode = kind === "building" && "postalCode" in feature && Boolean(feature.postalCode) && visible.postalCode && zoom >= postalCodeMinZoom;
+      const priority = isSelected(kind, feature.id) ? 0 : kind === "building" && feature.type === "landmark" ? 1 : kind === "zone" ? 2 : kind === "terrain" ? 3 : 4;
+      nameLabels.push({ position: layer.getBounds().getCenter(), name, withPostalCode, priority });
+    };
     const isSelected = (kind: SelectedFeature["kind"], id: string) => selection?.kind === kind && selection.feature.id === id;
     const enableGeometryEdit = (layer: EditableLayer) => {
       if (!editorMode || drawKind) return;
@@ -194,20 +205,22 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     if (visible.zone) {
       project.zones.forEach((feature) => {
         const selected = isSelected("zone", feature.id);
-        L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
+        const zoneLayer = L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
           color: selected ? "#FFFFFF" : darken(zoneColors[feature.type]), weight: selected ? 3 : 1, fillColor: zoneColors[feature.type], fillOpacity: selected ? 0.32 : 0.2,
         }).addTo(layers);
-        bindFeatureLayer(layers.getLayers().at(-1)! as EditableLayer, "zone", feature);
+        bindFeatureLayer(zoneLayer as EditableLayer, "zone", feature);
+        collectName("zone", feature, zoneLayer);
       });
     }
     if (visible.terrain) {
       project.terrain.forEach((feature) => {
         if (!visible.terrain[feature.type]) return;
         const selected = isSelected("terrain", feature.id);
-        L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
+        const terrainLayer = L.polygon(polygonPositions(feature.geometry.coordinates, width, height), {
           color: selected ? "#FFFFFF" : darken(terrainColors[feature.type]), weight: selected ? 3 : 1, fillColor: terrainColors[feature.type], fillOpacity: selected ? 0.4 : feature.type === "city" ? 0.25 : 0.3,
         }).addTo(layers);
-        bindFeatureLayer(layers.getLayers().at(-1)! as EditableLayer, "terrain", feature);
+        bindFeatureLayer(terrainLayer as EditableLayer, "terrain", feature);
+        collectName("terrain", feature, terrainLayer);
       });
     }
     if (visible.road) {
@@ -231,23 +244,23 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
           weight: selected ? 3 : feature.isBurglaryTarget ? 2 : 1, fillColor: color, fillOpacity: selected ? 0.38 : feature.type === "burglary" ? 0.18 : 0.22,
         }).addTo(layers);
         bindFeatureLayer(buildingLayer as EditableLayer, "building", feature);
+        collectName("building", feature, buildingLayer);
         if (visible.postalCode && zoom >= postalCodeMinZoom && feature.postalCode) {
           L.marker(buildingLayer.getBounds().getCenter(), { icon: postalCodeIcon(feature.postalCode), interactive: false, keyboard: false }).addTo(layers);
         }
       });
     }
-    if (visible.marker) {
-      project.markers.forEach((feature) => {
-        if (!visible.marker[feature.type]) return;
-        const [x, y] = feature.geometry.coordinates;
-        const color = feature.color ?? markerColors[feature.type];
-        const iconUrl = project.icons?.find((icon) => icon.id === feature.iconRef)?.url;
-        const marker = L.marker([y * height, x * width], { icon: pinIcon(color, feature.name, feature.size ?? 24, isSelected("marker", feature.id), iconUrl), keyboard: true });
-        marker.on("add", () => { const image = marker.getElement()?.querySelector("img"); if (image) { const fallback = () => image.remove(); image.addEventListener("error", fallback, { once: true }); if (image.complete && !image.naturalWidth) fallback(); } });
-        marker.addTo(layers);
-        bindFeatureLayer(marker as EditableLayer, "marker", feature);
-      });
-    }
+    const occupiedLabels: { left: number; right: number; top: number; bottom: number }[] = [];
+    nameLabels.sort((a, b) => a.priority - b.priority).forEach((label) => {
+      const point = map.latLngToLayerPoint(label.position);
+      const offset = 0;
+      const halfWidth = Math.min(180, Math.max(42, Array.from(label.name).length * 12 + 16)) / 2;
+      const bottom = point.y - (label.withPostalCode ? 12 : -11) - offset;
+      const box = { left: point.x - halfWidth - 4, right: point.x + halfWidth + 4, top: bottom - 26, bottom: bottom + 4 };
+      if (occupiedLabels.some(other => box.left < other.right && box.right > other.left && box.top < other.bottom && box.bottom > other.top)) return;
+      occupiedLabels.push(box);
+      L.marker(label.position, { icon: areaNameIcon(label.name, label.withPostalCode, offset), interactive: false, keyboard: false, pmIgnore: true }).addTo(layers);
+    });
     if (visible.building) {
       project.buildings.forEach((building) => {
         if (building.type !== "residence" || !visible.building.residence) return;
@@ -341,6 +354,10 @@ function entranceIcon(houseNumber: string | undefined): L.DivIcon {
 
 function postalCodeIcon(postalCode: string): L.DivIcon {
   return L.divIcon({ className: "postal-code-label-shell", iconSize: [1, 1], iconAnchor: [0, 0], html: `<span class="postal-code-label">${escapeHtml(postalCode)}</span>` });
+}
+
+function areaNameIcon(name: string, withPostalCode: boolean, offset: number): L.DivIcon {
+  return L.divIcon({ className: "area-name-label-shell", iconSize: [1, 1], iconAnchor: [0, 0], html: `<span class="area-name-label${withPostalCode ? " has-postal-code" : ""}" style="top: -${offset}px">${escapeHtml(name)}</span>` });
 }
 
 function escapeHtml(value: string): string {

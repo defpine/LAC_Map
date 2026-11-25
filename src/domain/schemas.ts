@@ -22,15 +22,15 @@ export const projectFileSchema = z.object({
 }).passthrough();
 
 export const geographyFileSchema = z.object({
-  terrain: z.array(z.object({ id: z.string(), type: z.enum(["mountain", "beach", "lake", "city"]), name: z.string().optional(), geometry: polygonGeometry }).passthrough()),
-  zones: z.array(z.object({ id: z.string(), type: z.enum(["jurisdiction", "safe_zone", "pvp_zone"]), name: z.string().optional(), geometry: polygonGeometry }).passthrough()),
+  terrain: z.array(z.object({ id: z.string(), type: z.enum(["mountain", "beach", "lake", "city"]), name: z.string().optional(), description: z.string().optional(), bannerRef: z.string().optional(), geometry: polygonGeometry }).passthrough()),
+  zones: z.array(z.object({ id: z.string(), type: z.enum(["jurisdiction", "safe_zone", "pvp_zone"]), name: z.string().optional(), description: z.string().optional(), bannerRef: z.string().optional(), geometry: polygonGeometry }).passthrough()),
   roads: z.array(z.object({ id: z.string(), type: z.enum(["highway", "expressway", "national_road"]), name: z.string().optional(), width: z.number().int().min(4).max(100), color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), geometry: lineGeometry }).passthrough()),
 });
 
 export const buildingsFileSchema = z.object({
   buildings: z.array(z.object({
     id: z.string(), type: z.enum(["institution", "shop", "residence", "other", "burglary", "landmark", "terminal", "content"]).transform(type => type === "other" ? "burglary" as const : type), name: z.string().optional(),
-    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), description: z.string().optional(), bannerRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
   }).passthrough()),
 });
 

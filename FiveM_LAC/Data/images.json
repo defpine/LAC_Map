@@ -21,16 +21,16 @@
       "originalFileName": "Oil_Station.png",
       "filePath": "Assets/images/icons/image_000003.png",
       "format": "png",
-      "fileSize": 3240,
-      "sha256": "db44b51d1d71abdb1de7caf35a592767118ac80d61dd88047e50fd3090637d28"
+      "fileSize": 4206,
+      "sha256": "eb1e0e54ac97833a95ebd44e5e3348863363b04f2cf95b1e89faad2982c8e5e4"
     },
     {
       "id": "image_000004",
       "originalFileName": "Bus.png",
       "filePath": "Assets/images/icons/image_000004.png",
       "format": "png",
-      "fileSize": 4581,
-      "sha256": "95107026b85e5bcb909653899cfb4296132324f31196910eba8d0a5d6191d789"
+      "fileSize": 5050,
+      "sha256": "5a3f51675d3e1c9e4052d58399c26f6ffbff551efa89d2da231248a370db60ba"
     },
     {
       "id": "image_000005",
@@ -87,6 +87,30 @@
       "format": "png",
       "fileSize": 4184,
       "sha256": "21d3c6f74e36ff212c93c6947908af4c7b2824d39955507965fb1fa8c64b879c"
+    },
+    {
+      "id": "image_000012",
+      "originalFileName": "LSPD_PaletoBaySheriff.png",
+      "filePath": "Assets/images/banners/image_000012.png",
+      "format": "png",
+      "fileSize": 370903,
+      "sha256": "db3d0bdd1925f9ad23f9f6441b44d36e7ed7de7b32f61ae28ddf616dc0cbc47e"
+    },
+    {
+      "id": "image_000013",
+      "originalFileName": "Fishing.png",
+      "filePath": "Assets/images/icons/image_000013.png",
+      "format": "png",
+      "fileSize": 4805,
+      "sha256": "fa3517113f645148e1c69b0574a677eed24c1724eca0a9a93db4ddba7c0a7d7c"
+    },
+    {
+      "id": "image_000014",
+      "originalFileName": "CableCar.png",
+      "filePath": "Assets/images/icons/image_000014.png",
+      "format": "png",
+      "fileSize": 4940,
+      "sha256": "aeaf7f5a7fcead36ed1af9ac269317c049f566919bcf3565ba6d8792de2f6ace"
     }
   ]
 }

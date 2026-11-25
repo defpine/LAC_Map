@@ -5,7 +5,7 @@ const target = path.resolve('public-viewer');
 if (target !== path.join(process.cwd(), 'public-viewer')) throw new Error('Unsafe staging path');
 await rm(target, { recursive: true, force: true });
 await mkdir(target, { recursive: true });
-const names = ['project', 'geography', 'buildings', 'markers', 'institutions', 'shops', 'npcs', 'facilities', 'images'];
+const names = ['project', 'geography', 'buildings', 'institutions', 'shops', 'npcs', 'facilities', 'images'];
 await mkdir(path.join(target, 'Data'), { recursive: true });
 for (const name of names) {
   const source = path.join(root, 'Data', `${name}.json`);

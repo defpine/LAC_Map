@@ -7,7 +7,6 @@ export async function saveProjectData(root: FileSystemDirectoryHandle, project: 
   const writes: PendingWrite[] = [
     { name: "geography.json", text: json({ terrain: project.terrain, zones: project.zones, roads: project.roads }) },
     { name: "buildings.json", text: json({ buildings: project.buildings }) },
-    { name: "markers.json", text: json({ markers: project.markers }) },
     { name: "institutions.json", text: json({ institutions: project.institutions }) },
     { name: "shops.json", text: json({ shops: project.shops }) },
     { name: "npcs.json", text: json({ npcs: project.npcs }) },

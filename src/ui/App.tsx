@@ -8,6 +8,8 @@ import { saveProjectData } from "../editor/projectSaver";
 import { buildingColors, markerColors, roadStyles, terrainColors, zoneColors } from "../domain/theme";
 import { MapCanvas, type DrawKind, type DrawnGeometry, type SelectedFeature, type Visibility } from "./MapCanvas";
 import { PopupBanner } from "./PopupBanner";
+import { buildingDetails } from "../domain/buildingDetails";
+import { MapFilters } from "./MapFilters";
 
 const MAX_HISTORY_ENTRIES = 100;
 type DetailKind = "institution" | "shop" | "npc" | "facility";
@@ -19,6 +21,7 @@ export function App() {
     terrain: { mountain: true, beach: true, lake: true, city: true },
     zone: true,
     road: true,
+    name: true,
     postalCode: true,
     building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true },
     marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true },
@@ -39,6 +42,7 @@ export function App() {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [draftName, setDraftName] = useState("");
+  const [draftAreaDescription, setDraftAreaDescription] = useState("");
   const [draftType, setDraftType] = useState("");
   const [draftRoadWidth, setDraftRoadWidth] = useState("16");
   const [draftRoadColor, setDraftRoadColor] = useState("");
@@ -222,11 +226,13 @@ export function App() {
     setDirty(true);
   }, [commitProject]);
   const selectedTitle = useMemo(() => selection ? selection.feature.name ?? selection.feature.id : "", [selection]);
-  const linkedSelectionDetail = useMemo(() => (selection?.kind === "marker" || selection?.kind === "building") && selection.feature.entityRef ? findDetailById(project, selection.feature.entityRef) : undefined, [project, selection]);
+  const linkedSelectionDetails = useMemo(() => selection?.kind === "building" ? buildingDetails(project, selection.feature) : [], [project, selection]);
+  const linkedSelectionDetail = linkedSelectionDetails[0];
   const saveStateLabel = dirty ? (projectRoot ? "저장되지 않은 변경사항" : "변경사항 있음 · 폴더 연결 필요") : "미저장 변경 없음";
   const canSave = editorMode && dirty && projectRoot !== null && !saving;
   useEffect(() => {
     setDraftName(selection?.feature.name ?? "");
+    setDraftAreaDescription(selection && selection.kind !== "road" && selection.kind !== "marker" ? selection.feature.description ?? "" : "");
     setDraftType(selection?.feature.type ?? "");
     setDraftRoadWidth(selection?.kind === "road" ? String(selection.feature.width) : "16");
     setDraftRoadColor(selection?.kind === "road" ? selection.feature.color ?? "" : "");
@@ -237,7 +243,7 @@ export function App() {
     setDraftPurchasable(selection?.kind === "building" && Boolean(selection.feature.isPurchasable));
     setDraftPostalCode(selection?.kind === "building" ? selection.feature.postalCode ?? "" : "");
     setDraftIconRef(selection?.kind === "building" || selection?.kind === "marker" ? selection.feature.iconRef ?? "" : "");
-    setDraftBannerRef(selection?.kind === "marker" ? selection.feature.bannerRef ?? "" : "");
+    setDraftBannerRef(selection && selection.kind !== "road" ? selection.feature.bannerRef ?? "" : "");
     setDeleteConfirm(false);
   }, [selection]);
   useEffect(() => {
@@ -335,11 +341,11 @@ export function App() {
     if (!selection) return;
     const name = draftName.trim() || undefined;
     if (selection.kind === "terrain") {
-      const feature: Terrain = { ...selection.feature, name, type: draftType as TerrainType };
+      const feature: Terrain = { ...selection.feature, name, type: draftType as TerrainType, description: draftAreaDescription.trim() || undefined, bannerRef: draftBannerRef || undefined };
       commitProject((current) => ({ ...current, terrain: current.terrain.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "terrain", feature });
     } else if (selection.kind === "zone") {
-      const feature: Zone = { ...selection.feature, name, type: draftType as ZoneType };
+      const feature: Zone = { ...selection.feature, name, type: draftType as ZoneType, description: draftAreaDescription.trim() || undefined, bannerRef: draftBannerRef || undefined };
       commitProject((current) => ({ ...current, zones: current.zones.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "zone", feature });
     } else if (selection.kind === "road") {
@@ -349,7 +355,7 @@ export function App() {
       setSelection({ kind: "road", feature });
     } else if (selection.kind === "building") {
       const postalCode = draftPostalCode.trim() || undefined;
-      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined };
+      const feature: Building = { ...selection.feature, name, type: draftType as BuildingType, postalCode, iconRef: draftIconRef || undefined, description: draftAreaDescription.trim() || undefined, bannerRef: draftBannerRef || undefined, isBurglaryTarget: draftBurglary || undefined, isPurchasable: draftPurchasable || undefined };
       commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === feature.id ? feature : item) }));
       setSelection({ kind: "building", feature });
     } else {
@@ -443,16 +449,10 @@ export function App() {
           <button className="sidebar-toggle" onClick={() => setSidebarOpen((value) => !value)} aria-label="필터 열기 또는 닫기">☰</button>
           {sidebarOpen && <div className="filter-content">
             <div className="filter-header"><h1>필터</h1><button onClick={() => setVisibility(allVisible())}>전체 표시</button></div>
-            <FilterGroup title="지형" entries={typedFilterEntries(project, "terrain")} value={visibility.terrain as Record<string, boolean>} onChange={(type) => setVisibility((current) => ({ ...current, terrain: { ...current.terrain, [type]: !current.terrain[type as TerrainType] } }))} onToggleAll={(enabled) => setVisibility((current) => ({ ...current, terrain: Object.fromEntries(Object.keys(current.terrain).map((type) => [type, enabled])) as Visibility["terrain"] }))} />
-            <FilterGroup title="건물" entries={typedFilterEntries(project, "building")} value={visibility.building as Record<string, boolean>} onChange={(type) => setVisibility((current) => ({ ...current, building: { ...current.building, [type]: !current.building[type as BuildingType] } }))} onToggleAll={(enabled) => setVisibility((current) => ({ ...current, building: Object.fromEntries(Object.keys(current.building).map((type) => [type, enabled])) as Visibility["building"] }))} />
-            <FilterGroup title="마커" entries={typedFilterEntries(project, "marker")} value={visibility.marker as Record<string, boolean>} onChange={(type) => setVisibility((current) => ({ ...current, marker: { ...current.marker, [type]: !current.marker[type as MarkerType] } }))} onToggleAll={(enabled) => setVisibility((current) => ({ ...current, marker: Object.fromEntries(Object.keys(current.marker).map((type) => [type, enabled])) as Visibility["marker"] }))} />
-            <div className="simple-filter-group">
-              {(["zone", "road"] as const).map((key) => <label className="filter-row" key={key}><input type="checkbox" checked={visibility[key]} onChange={() => setVisibility((current) => ({ ...current, [key]: !current[key] }))} /><span>{key === "zone" ? "구역" : "도로"}</span><small>{featureCount(project, key)}</small></label>)}
-              <label className="filter-row"><input type="checkbox" checked={visibility.postalCode} onChange={() => setVisibility((current) => ({ ...current, postalCode: !current.postalCode }))} /><span>우편번호 표시</span><small>{project.buildings.filter((building) => Boolean(building.postalCode)).length}</small></label>
-            </div>
+            <MapFilters visible={visibility} setVisible={setVisibility} />
             {editorMode && <div className="add-menu">
               <p>객체 추가</p>
-              {(["marker", "building", "road", "terrain", "zone"] as DrawKind[]).map((kind) => <button className={drawKind === kind ? "selected" : ""} key={kind} onClick={() => setDrawKind(kind)}>{drawLabel(kind)}</button>)}
+              {(["building", "road", "terrain", "zone"] as DrawKind[]).map((kind) => <button className={drawKind === kind ? "selected" : ""} key={kind} onClick={() => setDrawKind(kind)}>{drawLabel(kind)}</button>)}
             </div>}
           </div>}
         </aside>
@@ -464,19 +464,21 @@ export function App() {
           </div>
           <MapLegend open={legendOpen} onToggle={() => setLegendOpen((open) => !open)} />
           {selection && <aside className="detail-card" role="dialog" aria-label="선택한 객체 정보">
-            {selection.kind === "marker" && <PopupBanner url={project.icons?.find((image) => image.id === selection.feature.bannerRef)?.url} />}
+            {selection.kind !== "road" && <PopupBanner url={project.icons?.find((image) => image.id === selection.feature.bannerRef)?.url} />}
             <button className="detail-close" onClick={() => setSelection(null)} aria-label="닫기">×</button>
             <div className={`feature-chip ${selection.kind}`} style={{ backgroundColor: featureChipColor(selection) }}>{(selection.kind === "building" || selection.kind === "marker") && (() => { const icon = project.icons?.find((item) => item.id === selection.feature.iconRef); return icon?.url ? <img className="feature-icon-image" src={icon.url} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : null; })()}</div>
             <p className="eyebrow">{kindLabel(selection.kind, selection.feature.type)}{!editorMode && linkedSelectionDetail && selection.kind === "marker" && selection.feature.type === "shop" ? ` · ${detailTypeLabel(linkedSelectionDetail.type)}` : ""}</p>
             <h2>{editorMode ? selectedTitle : linkedSelectionDetail?.name || selection.feature.name || "이름 없음"}</h2>
+            {!editorMode && selection.kind !== "road" && selection.kind !== "marker" && selection.feature.description && <p>{selection.feature.description}</p>}
             {editorMode && <p className="feature-id">{selection.feature.id}</p>}
             {!editorMode && selection.kind === "building" && selection.feature.type === "residence" && <ViewerResidenceUnits building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} />}
             {!editorMode && selection.kind === "building" && <ViewerBuildingInfo building={selection.feature} />}
-            {!editorMode && linkedSelectionDetail && <DetailPopupContent detail={linkedSelectionDetail} />}
+            {!editorMode && linkedSelectionDetails.map(detail => <DetailPopupContent key={detail.id} detail={detail} />)}
             {editorMode && !drawKind && <p className="geometry-hint">{selection.kind === "marker" ? "마커를 끌어 위치를 바꿀 수 있습니다." : "표시된 꼭짓점을 끌거나 눌러 경계를 편집할 수 있습니다."}</p>}
             {selection.kind === "road" && <p>폭: {selection.feature.width}px</p>}
             {editorMode && <div className="inspector-fields">
               <label>이름<input value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder="이름 없음" /></label>
+              {selection.kind !== "road" && selection.kind !== "marker" && <label>설명<textarea value={draftAreaDescription} onChange={(event) => setDraftAreaDescription(event.target.value)} placeholder="영역에 대한 설명" /></label>}
               <label>종류<select value={draftType} onChange={(event) => setDraftType(event.target.value)}>{!typeOptions(selection.kind).some(option => option.value === draftType) && <option value={draftType} disabled>기존 유형 ({draftType})</option>}{typeOptions(selection.kind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
               {selection.kind === "road" && <>
                 <label>기본 폭 (4–100)<input type="number" min="4" max="100" value={draftRoadWidth} onChange={(event) => setDraftRoadWidth(event.target.value)} /></label>
@@ -493,7 +495,7 @@ export function App() {
                 <label>사용자 색상 (선택)<input value={draftMarkerColor} onChange={(event) => setDraftMarkerColor(event.target.value)} placeholder="#RRGGBB · 비워두면 종류 기본색" /></label>
               </>}
               {(selection.kind === "building" || selection.kind === "marker") && <><label>전용 아이콘<select value={draftIconRef} onChange={(event) => setDraftIconRef(event.target.value)}><option value="">없음 · 기본 색상 사용</option>{(project.icons ?? []).map((icon) => <option key={icon.id} value={icon.id}>{icon.originalFileName}</option>)}</select></label><label>아이콘 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file); }} /></label><small>PNG, JPG, WebP · 최대 10MB · 애니메이션 제외</small></>}
-              {selection.kind === "marker" && <><label>미리보기 배너<select value={draftBannerRef} onChange={(event) => setDraftBannerRef(event.target.value)}><option value="">없음</option>{(project.icons ?? []).map((image) => <option key={image.id} value={image.id}>{image.originalFileName}</option>)}</select></label><label>배너 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file, "banner"); }} /></label><small>권장 800 × 450px · 16:9 · PNG, JPG, WebP · 최대 10MB</small></>}
+              {selection.kind !== "road" && <><label>미리보기 배너<select value={draftBannerRef} onChange={(event) => setDraftBannerRef(event.target.value)}><option value="">없음</option>{(project.icons ?? []).map((image) => <option key={image.id} value={image.id}>{image.originalFileName}</option>)}</select></label><label>배너 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file, "banner"); }} /></label><small>권장 800 × 450px · 16:9 · PNG, JPG, WebP · 최대 10MB</small></>}
               <div className="inspector-actions"><button className="save-property" onClick={saveSelectedProperties}>속성 Save</button><button className="delete-property" onClick={() => setDeleteConfirm(true)}>Delete</button></div>
               {selection.kind === "building" && selection.feature.type === "residence" && <ResidenceUnitsEditor building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} onAddUnit={addResidenceUnit} onUpdateUnit={updateResidenceUnit} onDeleteUnit={deleteResidenceUnit} onAddEntrance={(unitId) => { setVisibleEntranceUnit({ buildingId: selection.feature.id, unitId }); setEntranceTarget({ buildingId: selection.feature.id, unitId }); setDrawKind("entrance"); }} onDeleteEntrance={deleteEntrance} />}
             </div>}
@@ -534,8 +536,6 @@ export function App() {
               </>}
               <section className="connection-section"><strong>연결 정보</strong>
                 {(detailSelection?.kind === "institution" || detailSelection?.kind === "shop") && <label>건물 연결<select value={buildingConnection} onChange={(event) => setBuildingConnection(event.target.value)}><option value="">연결 안 함</option>{availableBuildings(project, selectedDetail).map((building) => <option key={building.id} value={building.id}>{building.name ?? building.id} · {building.type} · {building.id}</option>)}</select></label>}
-                <label>대표 마커 연결<select value={markerConnection} onChange={(event) => setMarkerConnection(event.target.value)}><option value="">연결 안 함</option>{availableMarkers(project, selectedDetail).map((marker) => <option key={marker.id} value={marker.id}>{marker.name ?? marker.id} · {marker.id}</option>)}</select></label>
-                {availableMarkers(project, selectedDetail).length === 0 && <small className="connection-empty">연결 가능한 마커가 없습니다.</small>}
                 <button className="subtle-button" onClick={saveConnections}>연결 정보 Save</button>
               </section>
               <div className="inspector-actions"><button className="save-property" onClick={saveDetail}>상세 Save</button><button className="delete-property" onClick={deleteDetail}>Delete</button></div>
@@ -575,7 +575,6 @@ function MapLegend({ open, onToggle }: { open: boolean; onToggle: () => void }) 
     ["건물", [["기관", buildingColors.institution], ["상점", buildingColors.shop], ["빈집털이", buildingColors.burglary], ["랜드마크", buildingColors.landmark], ["터미널", buildingColors.terminal], ["콘텐츠", buildingColors.content]]],
     ["도로", [["고속도로", roadStyles.highway.color], ["고속화도로", roadStyles.expressway.color], ["국도", roadStyles.national_road.color]]],
     ["지형", [["산", terrainColors.mountain], ["해변", terrainColors.beach], ["호수", terrainColors.lake], ["도시", terrainColors.city]]],
-    ["마커", [["기관", markerColors.institution], ["상점", markerColors.shop], ["NPC", markerColors.npc], ["차고", markerColors.garage], ["콘텐츠", markerColors.content], ["터미널", markerColors.terminal], ["주유소", markerColors.gas_station]]],
   ] as const;
   return <aside className={`map-legend ${open ? "open" : ""}`} aria-label="지도 범례"><button type="button" onClick={onToggle} aria-expanded={open}>범례 <span>{open ? "−" : "+"}</span></button>{open && <div className="legend-panel">{entries.map(([title, items]) => <section key={title}><strong>{title}</strong>{items.map(([label, color]) => <span key={label}><i style={{ backgroundColor: color }} />{label}</span>)}</section>)}<p><i className="legend-selection" />선택 강조</p></div>}</aside>;
 }
@@ -602,7 +601,7 @@ function FilterGroup({ title, entries, value, onChange, onToggleAll }: { title: 
 }
 
 function allVisible(): Visibility {
-  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, postalCode: true, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true } };
+  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, name: true, postalCode: true, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true } };
 }
 
 function typedFilterEntries(project: MapProject, kind: "terrain" | "building" | "marker"): { type: string; label: string; count: number }[] {
@@ -620,7 +619,6 @@ function searchFeatures(project: MapProject, query: string): SelectedFeature[] {
     ...project.zones.map((feature) => ({ kind: "zone" as const, feature })),
     ...project.roads.map((feature) => ({ kind: "road" as const, feature })),
     ...project.buildings.map((feature) => ({ kind: "building" as const, feature })),
-    ...project.markers.map((feature) => ({ kind: "marker" as const, feature })),
   ];
   return candidates.filter((candidate) => {
     const postalCode = candidate.kind === "building" ? candidate.feature.postalCode ?? "" : "";

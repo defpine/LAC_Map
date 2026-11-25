@@ -1,14 +1,13 @@
 import { ZodError } from "zod";
-import { buildingsFileSchema, facilitiesFileSchema, geographyFileSchema, iconsFileSchema, institutionsFileSchema, markersFileSchema, npcsFileSchema, projectFileSchema, shopsFileSchema } from "../domain/schemas";
+import { buildingsFileSchema, facilitiesFileSchema, geographyFileSchema, iconsFileSchema, institutionsFileSchema, npcsFileSchema, projectFileSchema, shopsFileSchema } from "../domain/schemas";
 import type { MapProject } from "../domain/types";
 
 export async function loadMapProject(root: FileSystemDirectoryHandle): Promise<MapProject> {
   const data = await root.getDirectoryHandle("Data");
-  const [projectData, geographyData, buildingsData, markersData, institutionsData, shopsData, npcsData, facilitiesData, iconData] = await Promise.all([
+  const [projectData, geographyData, buildingsData, institutionsData, shopsData, npcsData, facilitiesData, iconData] = await Promise.all([
     readJson(data, "project.json", projectFileSchema),
     readJson(data, "geography.json", geographyFileSchema),
     readJson(data, "buildings.json", buildingsFileSchema),
-    readJson(data, "markers.json", markersFileSchema),
     readJson(data, "institutions.json", institutionsFileSchema),
     readJson(data, "shops.json", shopsFileSchema),
     readJson(data, "npcs.json", npcsFileSchema),
@@ -37,7 +36,7 @@ export async function loadMapProject(root: FileSystemDirectoryHandle): Promise<M
     zones: geographyData.zones,
     roads: geographyData.roads,
     buildings: buildingsData.buildings,
-    markers: markersData.markers,
+    markers: [],
     institutions: institutionsData.institutions,
     shops: shopsData.shops,
     npcs: npcsData.npcs,
@@ -77,3 +76,4 @@ async function fileAtPath(root: FileSystemDirectoryHandle, path: string): Promis
   for (const piece of pieces.slice(0, -1)) directory = await directory.getDirectoryHandle(piece);
   return (await directory.getFileHandle(pieces.at(-1)!)).getFile();
 }
+

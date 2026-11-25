@@ -15,11 +15,11 @@
       "id": "facility_000002",
       "type": "terminal",
       "name": "칠리아드 산 케이블카",
-      "customFields": [],
       "location": {
         "type": "building",
         "buildingRef": "building_000081"
-      }
+      },
+      "customFields": []
     }
   ]
 }
