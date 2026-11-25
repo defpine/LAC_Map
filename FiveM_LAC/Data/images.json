@@ -135,6 +135,14 @@
       "format": "png",
       "fileSize": 549401,
       "sha256": "9e5c7062d981f84406a13b92c0a946d14dcb66b7a405535bc8e706ba33186f41"
+    },
+    {
+      "id": "image_000018",
+      "originalFileName": "Police_White.png",
+      "filePath": "Assets/images/icons/image_000018.png",
+      "format": "png",
+      "fileSize": 4838,
+      "sha256": "9dd467c9265e83842b3009d1b1f16a68a499d328291ef7cf171a4c7388c6af02"
     }
   ]
 }

@@ -48,6 +48,8 @@ const polygonPositions = (coordinates: readonly (readonly (readonly [number, num
 const linePositions = (coordinates: readonly (readonly [number, number])[], width: number, height: number): L.LatLngExpression[] =>
   coordinates.map(([x, y]) => [y * height, x * width]);
 
+const maxMapZoom = Math.log2(1.5 * 1.2 ** 2);
+
 export function MapCanvas({ project, visible, selection, focusTarget, onSelect, drawKind, onDrawn, editorMode, onGeometryEdited, onEntranceMoved, visibleEntranceUnit }: Props) {
   const node = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -58,7 +60,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
   // Postal labels are useful only after the map has enough room to avoid
   // overlapping every building. This is roughly four times past a full-map view.
   const postalCodeMinZoom = -1.5;
-  const buildingNameMinZoom = -2.5;
+  const buildingNameMinZoom = -2.24;
   const regionNameMinZoom = -4;
 
   useEffect(() => {
@@ -96,8 +98,8 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
       // The floor is replaced with a map-size-specific value after fitBounds.
       // Keeping it low here lets a tall source image fit into any viewport first.
       minZoom: -8,
-      // 1.5× past native image scale for close inspection without excessive blur.
-      maxZoom: Math.log2(1.5),
+      // Two additional 1.2× steps beyond the previous 1.5× maximum.
+      maxZoom: maxMapZoom,
       zoomSnap: 0,
       zoomDelta: Math.log2(1.2),
       maxBounds: bounds,
@@ -172,7 +174,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     activeEditLayerRef.current?.pm.disable();
     activeEditLayerRef.current = null;
     const { width, height } = project.image;
-    const nameLabels: { position: L.LatLng; name: string; withPostalCode: boolean; priority: number }[] = [];
+    const nameLabels: { position: L.LatLng; name: string; kind: "zone" | "terrain" | "building"; terrainType?: "mountain" | "beach" | "lake"; withPostalCode: boolean; priority: number }[] = [];
     const labelPosition = (feature: Zone | Terrain | Building) => {
       const [x, y] = polygonLabelPoint(feature.geometry);
       return L.latLng(y * height, x * width);
@@ -182,7 +184,8 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
       if (!visible.name || !name || zoom < (kind === "building" ? buildingNameMinZoom : regionNameMinZoom)) return;
       const withPostalCode = kind === "building" && "postalCode" in feature && Boolean(feature.postalCode) && visible.postalCode && zoom >= postalCodeMinZoom;
       const priority = isSelected(kind, feature.id) ? 0 : kind === "building" && feature.type === "landmark" ? 1 : kind === "zone" ? 2 : kind === "terrain" ? 3 : 4;
-      nameLabels.push({ position: labelPosition(feature), name, withPostalCode, priority });
+      const terrainType = kind === "terrain" && (feature.type === "mountain" || feature.type === "beach" || feature.type === "lake") ? feature.type : undefined;
+      nameLabels.push({ position: labelPosition(feature), name, kind, terrainType, withPostalCode, priority });
     };
     const isSelected = (kind: SelectedFeature["kind"], id: string) => selection?.kind === kind && selection.feature.id === id;
     const enableGeometryEdit = (layer: EditableLayer) => {
@@ -260,11 +263,12 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
       const point = map.latLngToLayerPoint(label.position);
       const offset = 0;
       const halfWidth = Math.min(180, Math.max(42, Array.from(label.name).length * 12 + 16)) / 2;
-      const bottom = point.y - (label.withPostalCode ? 12 : -11) - offset;
-      const box = { left: point.x - halfWidth - 4, right: point.x + halfWidth + 4, top: bottom - 26, bottom: bottom + 4 };
+      const labelHeight = label.kind === "zone" ? 29 : 23;
+      const bottom = point.y + (label.withPostalCode ? -12 : labelHeight / 2) - offset;
+      const box = { left: point.x - halfWidth - 4, right: point.x + halfWidth + 4, top: bottom - labelHeight - 4, bottom: bottom + 4 };
       if (occupiedLabels.some(other => box.left < other.right && box.right > other.left && box.top < other.bottom && box.bottom > other.top)) return;
       occupiedLabels.push(box);
-      L.marker(label.position, { icon: areaNameIcon(label.name, label.withPostalCode, offset), interactive: false, keyboard: false, pmIgnore: true }).addTo(layers);
+      L.marker(label.position, { icon: areaNameIcon(label.name, label.kind, label.terrainType, label.withPostalCode, offset), interactive: false, keyboard: false, pmIgnore: true }).addTo(layers);
     });
     if (visible.building) {
       project.buildings.forEach((building) => {
@@ -295,7 +299,7 @@ class ProjectTileLayer extends L.GridLayer {
       tileSize: 512,
       noWrap: true,
       minZoom: -6,
-      maxZoom: 1,
+      maxZoom: maxMapZoom,
       minNativeZoom: -5,
       maxNativeZoom: 0,
       bounds: [[0, 0], [project.image.height, project.image.width]],
@@ -361,8 +365,8 @@ function postalCodeIcon(postalCode: string): L.DivIcon {
   return L.divIcon({ className: "postal-code-label-shell", iconSize: [1, 1], iconAnchor: [0, 0], html: `<span class="postal-code-label">${escapeHtml(postalCode)}</span>` });
 }
 
-function areaNameIcon(name: string, withPostalCode: boolean, offset: number): L.DivIcon {
-  return L.divIcon({ className: "area-name-label-shell", iconSize: [1, 1], iconAnchor: [0, 0], html: `<span class="area-name-label${withPostalCode ? " has-postal-code" : ""}" style="top: -${offset}px">${escapeHtml(name)}</span>` });
+function areaNameIcon(name: string, kind: "zone" | "terrain" | "building", terrainType: "mountain" | "beach" | "lake" | undefined, withPostalCode: boolean, offset: number): L.DivIcon {
+  return L.divIcon({ className: "area-name-label-shell", iconSize: [1, 1], iconAnchor: [0, 0], html: `<span class="area-name-label${kind === "zone" ? " is-zone" : ""}${terrainType ? ` terrain-${terrainType}` : ""}${withPostalCode ? " has-postal-code" : ""}" style="top: -${offset}px">${escapeHtml(name)}</span>` });
 }
 
 function escapeHtml(value: string): string {

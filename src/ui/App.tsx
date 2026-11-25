@@ -574,7 +574,7 @@ function MapLegend({ open, onToggle }: { open: boolean; onToggle: () => void }) 
   const entries = [
     ["건물", [["기관", buildingColors.institution], ["상점", buildingColors.shop], ["빈집털이", buildingColors.burglary], ["랜드마크", buildingColors.landmark], ["터미널", buildingColors.terminal], ["콘텐츠", buildingColors.content]]],
     ["도로", [["고속도로", roadStyles.highway.color], ["고속화도로", roadStyles.expressway.color], ["국도", roadStyles.national_road.color]]],
-    ["지형", [["산", terrainColors.mountain], ["해변", terrainColors.beach], ["호수", terrainColors.lake], ["도시", terrainColors.city]]],
+    ["지형", [["산", terrainColors.mountain], ["해변", terrainColors.beach], ["호수", terrainColors.lake]]],
   ] as const;
   return <aside className={`map-legend ${open ? "open" : ""}`} aria-label="지도 범례"><button type="button" onClick={onToggle} aria-expanded={open}>범례 <span>{open ? "−" : "+"}</span></button>{open && <div className="legend-panel">{entries.map(([title, items]) => <section key={title}><strong>{title}</strong>{items.map(([label, color]) => <span key={label}><i style={{ backgroundColor: color }} />{label}</span>)}</section>)}<p><i className="legend-selection" />선택 강조</p></div>}</aside>;
 }
@@ -607,7 +607,7 @@ function allVisible(): Visibility {
 function typedFilterEntries(project: MapProject, kind: "terrain" | "building" | "marker"): { type: string; label: string; count: number }[] {
   const labels: Record<string, string> = { mountain: "산", beach: "해변", lake: "호수", city: "도시", institution: "기관", shop: "상점", burglary: "빈집털이", terminal: "터미널", npc: "NPC", garage: "차고", landmark: "랜드마크", content: "콘텐츠", bus_stop: "버스 정류장", gas_station: "주유소" };
   const items = kind === "terrain" ? project.terrain : kind === "building" ? project.buildings : project.markers;
-  const types = kind === "terrain" ? ["mountain", "beach", "lake", "city"] : kind === "building" ? ["institution", "shop", "burglary", "landmark", "terminal", "content"] : ["institution", "shop", "npc", "garage", "content", "terminal", "gas_station"];
+  const types = kind === "terrain" ? ["mountain", "beach", "lake"] : kind === "building" ? ["institution", "shop", "burglary", "landmark", "terminal", "content"] : ["institution", "shop", "npc", "garage", "content", "terminal", "gas_station"];
   return types.map((type) => ({ type, label: labels[type], count: items.filter((item) => item.type === type).length }));
 }
 
@@ -658,7 +658,7 @@ function kindLabel(kind: SelectedFeature["kind"], type: TerrainType | ZoneType |
 }
 
 function typeOptions(kind: SelectedFeature["kind"]): { value: string; label: string }[] {
-  if (kind === "terrain") return [{ value: "mountain", label: "산" }, { value: "beach", label: "해변" }, { value: "lake", label: "호수" }, { value: "city", label: "도시" }];
+  if (kind === "terrain") return [{ value: "mountain", label: "산" }, { value: "beach", label: "해변" }, { value: "lake", label: "호수" }];
   if (kind === "zone") return [{ value: "jurisdiction", label: "관할" }, { value: "safe_zone", label: "안전 구역" }, { value: "pvp_zone", label: "PVP 구역" }];
   if (kind === "road") return [{ value: "highway", label: "고속도로" }, { value: "expressway", label: "자동차전용도로" }, { value: "national_road", label: "국도" }];
   if (kind === "building") return [{ value: "institution", label: "기관" }, { value: "shop", label: "상점" }, { value: "burglary", label: "빈집털이" }, { value: "landmark", label: "랜드마크" }, { value: "terminal", label: "터미널" }, { value: "content", label: "콘텐츠" }];
