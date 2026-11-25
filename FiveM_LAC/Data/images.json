@@ -111,6 +111,30 @@
       "format": "png",
       "fileSize": 4940,
       "sha256": "aeaf7f5a7fcead36ed1af9ac269317c049f566919bcf3565ba6d8792de2f6ace"
+    },
+    {
+      "id": "image_000015",
+      "originalFileName": "LSPD_Highway.png",
+      "filePath": "Assets/images/banners/image_000015.png",
+      "format": "png",
+      "fileSize": 435171,
+      "sha256": "274784e7757809c7bdd1cb47cd1cdd595b9bd1d5857e160517fba0c2228620e8"
+    },
+    {
+      "id": "image_000016",
+      "originalFileName": "EMS_Green.png",
+      "filePath": "Assets/images/icons/image_000016.png",
+      "format": "png",
+      "fileSize": 5299,
+      "sha256": "87c9a43b4bda762a161859b138072a20f269bfedf853e07fbcfb0d5a71a98c0d"
+    },
+    {
+      "id": "image_000017",
+      "originalFileName": "LosSantosMedicalCenter.png",
+      "filePath": "Assets/images/banners/image_000017.png",
+      "format": "png",
+      "fileSize": 549401,
+      "sha256": "9e5c7062d981f84406a13b92c0a946d14dcb66b7a405535bc8e706ba33186f41"
     }
   ]
 }

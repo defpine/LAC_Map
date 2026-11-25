@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { buildingColors, markerColors, roadStyles, terrainColors, zoneColors } from "../domain/theme";
 import type { Building, MapMarker, MapProject, Road, Terrain, Zone } from "../domain/types";
+import { polygonLabelPoint } from "../domain/polygonLabelPoint";
 
 export type SelectedFeature =
   | { kind: "terrain"; feature: Terrain }
@@ -172,12 +173,16 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     activeEditLayerRef.current = null;
     const { width, height } = project.image;
     const nameLabels: { position: L.LatLng; name: string; withPostalCode: boolean; priority: number }[] = [];
-    const collectName = (kind: "zone" | "terrain" | "building", feature: Zone | Terrain | Building, layer: L.Polygon) => {
+    const labelPosition = (feature: Zone | Terrain | Building) => {
+      const [x, y] = polygonLabelPoint(feature.geometry);
+      return L.latLng(y * height, x * width);
+    };
+    const collectName = (kind: "zone" | "terrain" | "building", feature: Zone | Terrain | Building) => {
       const name = feature.name?.trim();
       if (!visible.name || !name || zoom < (kind === "building" ? buildingNameMinZoom : regionNameMinZoom)) return;
       const withPostalCode = kind === "building" && "postalCode" in feature && Boolean(feature.postalCode) && visible.postalCode && zoom >= postalCodeMinZoom;
       const priority = isSelected(kind, feature.id) ? 0 : kind === "building" && feature.type === "landmark" ? 1 : kind === "zone" ? 2 : kind === "terrain" ? 3 : 4;
-      nameLabels.push({ position: layer.getBounds().getCenter(), name, withPostalCode, priority });
+      nameLabels.push({ position: labelPosition(feature), name, withPostalCode, priority });
     };
     const isSelected = (kind: SelectedFeature["kind"], id: string) => selection?.kind === kind && selection.feature.id === id;
     const enableGeometryEdit = (layer: EditableLayer) => {
@@ -209,7 +214,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
           color: selected ? "#FFFFFF" : darken(zoneColors[feature.type]), weight: selected ? 3 : 1, fillColor: zoneColors[feature.type], fillOpacity: selected ? 0.32 : 0.2,
         }).addTo(layers);
         bindFeatureLayer(zoneLayer as EditableLayer, "zone", feature);
-        collectName("zone", feature, zoneLayer);
+        collectName("zone", feature);
       });
     }
     if (visible.terrain) {
@@ -220,7 +225,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
           color: selected ? "#FFFFFF" : darken(terrainColors[feature.type]), weight: selected ? 3 : 1, fillColor: terrainColors[feature.type], fillOpacity: selected ? 0.4 : feature.type === "city" ? 0.25 : 0.3,
         }).addTo(layers);
         bindFeatureLayer(terrainLayer as EditableLayer, "terrain", feature);
-        collectName("terrain", feature, terrainLayer);
+        collectName("terrain", feature);
       });
     }
     if (visible.road) {
@@ -244,9 +249,9 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
           weight: selected ? 3 : feature.isBurglaryTarget ? 2 : 1, fillColor: color, fillOpacity: selected ? 0.38 : feature.type === "burglary" ? 0.18 : 0.22,
         }).addTo(layers);
         bindFeatureLayer(buildingLayer as EditableLayer, "building", feature);
-        collectName("building", feature, buildingLayer);
+        collectName("building", feature);
         if (visible.postalCode && zoom >= postalCodeMinZoom && feature.postalCode) {
-          L.marker(buildingLayer.getBounds().getCenter(), { icon: postalCodeIcon(feature.postalCode), interactive: false, keyboard: false }).addTo(layers);
+          L.marker(labelPosition(feature), { icon: postalCodeIcon(feature.postalCode), interactive: false, keyboard: false }).addTo(layers);
         }
       });
     }
