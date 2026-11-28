@@ -39,4 +39,3 @@ export const buildingColors: Record<BuildingType, string> = {
   terminal: "#8B5CF6",
   content: "#FACC15",
 };
-

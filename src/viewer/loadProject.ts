@@ -26,4 +26,3 @@ export async function loadProject(signal: AbortSignal): Promise<MapProject> {
     image: { width: image.width, height: image.height, url: assetUrl(image.filePath), previewUrl: image.previewFilePath ? assetUrl(image.previewFilePath) : undefined,
       tileUrlTemplate: image.tileDirectory ? assetUrl(`${image.tileDirectory}/level_{level}/{x}_{y}.png`) : undefined } };
 }
-

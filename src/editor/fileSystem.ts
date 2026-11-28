@@ -61,4 +61,3 @@ async function childDirectory(root: FileSystemDirectoryHandle, name: string, err
     return null;
   }
 }
-

@@ -42,4 +42,3 @@ button:disabled { cursor: not-allowed; opacity: .4; }
 .area-name-label.terrain-beach { background: #66502d; }
 .area-name-label.terrain-lake { background: #123d68; }
 .inspector-fields textarea { width: 100%; min-height: 80px; resize: vertical; border: 1px solid #4b5563; border-radius: 6px; background: #171a1f; color: #f8fafc; padding: 9px 10px; font: inherit; }
-

@@ -73,4 +73,3 @@ async function writeText(directory: FileSystemDirectoryHandle, name: string, tex
 function json(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
-

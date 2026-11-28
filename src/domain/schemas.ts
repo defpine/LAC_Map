@@ -30,7 +30,7 @@ export const geographyFileSchema = z.object({
 export const buildingsFileSchema = z.object({
   buildings: z.array(z.object({
     id: z.string(), type: z.enum(["institution", "shop", "residence", "other", "burglary", "landmark", "terminal", "content"]).transform(type => type === "other" ? "burglary" as const : type), name: z.string().optional(),
-    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), description: z.string().optional(), bannerRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), entrances: z.array(pointGeometry) })).optional(), geometry: polygonGeometry,
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), iconRef: z.string().optional(), description: z.string().optional(), bannerRef: z.string().optional(), postalCode: z.string().min(1).optional(), entityRef: z.string().optional(), isBurglaryTarget: z.boolean().optional(), isPurchasable: z.boolean().optional(), units: z.array(z.object({ id: z.string(), houseNumber: z.string().optional(), description: z.string().optional(), entrances: z.array(pointGeometry), geometry: polygonGeometry.optional() })).optional(), geometry: polygonGeometry,
   }).passthrough()),
 });
 
@@ -55,4 +55,3 @@ export const institutionsFileSchema = z.object({ institutions: z.array(z.object(
 export const shopsFileSchema = z.object({ shops: z.array(z.object({ id: z.string(), type: z.enum(shopTypes), name: z.string().optional(), description: z.string().optional(), items: z.array(z.string()).optional(), customFields }).passthrough()) });
 export const npcsFileSchema = z.object({ npcs: z.array(z.object({ id: z.string(), type: z.literal("npc").default("npc"), name: z.string().optional(), description: z.string().optional(), quests: z.array(z.string()).optional(), location, customFields }).passthrough()) });
 export const facilitiesFileSchema = z.object({ facilities: z.array(z.object({ id: z.string(), type: z.enum(["garage", "landmark", "content", "bus_stop", "terminal", "gas_station"]).transform(type => type === "bus_stop" ? "terminal" as const : type), name: z.string().optional(), description: z.string().optional(), location, customFields }).passthrough()) });
-

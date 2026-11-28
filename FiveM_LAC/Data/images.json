@@ -143,7 +143,14 @@
       "format": "png",
       "fileSize": 4838,
       "sha256": "9dd467c9265e83842b3009d1b1f16a68a499d328291ef7cf171a4c7388c6af02"
+    },
+    {
+      "id": "image_000019",
+      "originalFileName": "Liquor.png",
+      "filePath": "Assets/images/icons/image_000019.png",
+      "format": "png",
+      "fileSize": 4086,
+      "sha256": "353494c8df35d22078aa8abe7f505dc879d5d9a8bef46519bd2d92564c80bf6f"
     }
   ]
 }
-

@@ -66,7 +66,9 @@ export type Building = {
 export type ResidenceUnit = {
   id: string;
   houseNumber?: string;
+  description?: string;
   entrances: PointGeometry[];
+  geometry?: PolygonGeometry;
 };
 
 export type MapMarker = {
@@ -118,4 +120,3 @@ export type MapProject = {
   npcs: Npc[];
   facilities: Facility[];
 };
-

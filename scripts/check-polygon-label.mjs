@@ -21,4 +21,3 @@ const buildings = JSON.parse(await readFile('FiveM_LAC/Data/buildings.json', 'ut
 const geometries = [concave, hole, ...geography.terrain.map(area => area.geometry), ...geography.zones.map(area => area.geometry), ...buildings.buildings.map(area => area.geometry)];
 for (const geometry of geometries) assert.ok(inside(polygonLabelPoint(geometry), geometry.coordinates), 'label position must be inside polygon');
 console.log(`Verified interior label positions for ${geometries.length - 2} project areas, including 고르도 산, plus concave and holed examples.`);
-

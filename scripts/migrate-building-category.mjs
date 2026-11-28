@@ -1,0 +1,16 @@
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+const path = 'FiveM_LAC/Data/buildings.json';
+const original = await readFile(path, 'utf8');
+const data = JSON.parse(original);
+if (!Array.isArray(data.buildings)) throw new Error('Invalid building data');
+const changed = data.buildings.filter(item => item.type === 'other').length;
+const changedIds = new Set(data.buildings.filter(item => item.type === 'other').map(item => item.id));
+await mkdir('migration-backups', { recursive: true });
+const backup = `migration-backups/buildings-before-burglary-${Date.now()}.json`;
+await copyFile(path, backup);
+for (const building of data.buildings) if (building.type === 'other') building.type = 'burglary';
+await writeFile(path, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+const after = JSON.parse(await readFile(path, 'utf8'));
+for (const building of after.buildings) if (changedIds.has(building.id)) building.type = 'other';
+if (JSON.stringify(after) !== JSON.stringify(JSON.parse(original))) throw new Error('Unexpected data change; restore from ' + backup);
+console.log(`Updated ${changed} buildings; backup: ${backup}`);

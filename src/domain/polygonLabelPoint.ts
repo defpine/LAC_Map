@@ -32,4 +32,3 @@ export function polygonLabelPoint(geometry: PolygonGeometry): Position {
   }
   return best ? [best.x, best.y] : outer[0];
 }
-

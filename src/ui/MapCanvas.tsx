@@ -3,6 +3,7 @@ import L from "leaflet";
 import { buildingColors, markerColors, roadStyles, terrainColors, zoneColors } from "../domain/theme";
 import type { Building, MapMarker, MapProject, Road, Terrain, Zone } from "../domain/types";
 import { polygonLabelPoint } from "../domain/polygonLabelPoint";
+import { supportsBuildingUnits } from "../domain/buildingUnits";
 
 export type SelectedFeature =
   | { kind: "terrain"; feature: Terrain }
@@ -20,7 +21,7 @@ export type Visibility = {
   building: Record<Building["type"], boolean>;
   marker: Record<MapMarker["type"], boolean>;
 };
-export type DrawKind = "marker" | "building" | "terrain" | "zone" | "road" | "entrance";
+export type DrawKind = "marker" | "building" | "terrain" | "zone" | "road" | "entrance" | "unitArea";
 export type DrawnGeometry =
   | { type: "Point"; coordinates: readonly [number, number] }
   | { type: "LineString"; coordinates: readonly (readonly [number, number])[] }
@@ -48,7 +49,7 @@ const polygonPositions = (coordinates: readonly (readonly (readonly [number, num
 const linePositions = (coordinates: readonly (readonly [number, number])[], width: number, height: number): L.LatLngExpression[] =>
   coordinates.map(([x, y]) => [y * height, x * width]);
 
-const maxMapZoom = Math.log2(1.5 * 1.2 ** 2);
+const maxMapZoom = Math.log2(1.5 * 1.2 ** 5);
 
 export function MapCanvas({ project, visible, selection, focusTarget, onSelect, drawKind, onDrawn, editorMode, onGeometryEdited, onEntranceMoved, visibleEntranceUnit }: Props) {
   const node = useRef<HTMLDivElement>(null);
@@ -98,7 +99,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
       // The floor is replaced with a map-size-specific value after fitBounds.
       // Keeping it low here lets a tall source image fit into any viewport first.
       minZoom: -8,
-      // Two additional 1.2× steps beyond the previous 1.5× maximum.
+      // Five 1.2× steps beyond the original 1.5× maximum.
       maxZoom: maxMapZoom,
       zoomSnap: 0,
       zoomDelta: Math.log2(1.2),
@@ -152,7 +153,7 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     if (!map || !editorMode) return;
     map.pm.disableDraw();
     if (!drawKind) return;
-    const shape = ({ marker: "Marker", entrance: "Marker", building: "Polygon", terrain: "Polygon", zone: "Polygon", road: "Line" } as const)[drawKind];
+    const shape = ({ marker: "Marker", entrance: "Marker", unitArea: "Polygon", building: "Polygon", terrain: "Polygon", zone: "Polygon", road: "Line" } as const)[drawKind];
     const create = (event: { layer: L.Layer }) => {
       const geometry = normalizedGeometry(event.layer, project.image.width, project.image.height);
       event.layer.remove();
@@ -272,8 +273,10 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
     });
     if (visible.building) {
       project.buildings.forEach((building) => {
-        if (building.type !== "residence" || !visible.building.residence) return;
-        building.units?.filter((unit) => visibleEntranceUnit?.buildingId === building.id && visibleEntranceUnit.unitId === unit.id).forEach((unit) => unit.entrances.forEach((entrance, entranceIndex) => {
+        if (!supportsBuildingUnits(building) || !visible.building[building.type]) return;
+        building.units?.filter((unit) => visibleEntranceUnit?.buildingId === building.id && visibleEntranceUnit.unitId === unit.id).forEach((unit) => {
+          if (unit.geometry) L.polygon(polygonPositions(unit.geometry.coordinates, width, height), { color: "#FFFFFF", weight: 3, fillColor: "#FFFFFF", fillOpacity: 0.2, dashArray: "6 4", interactive: false, pmIgnore: true }).addTo(layers);
+          unit.entrances.forEach((entrance, entranceIndex) => {
           const [x, y] = entrance.coordinates;
           const entranceMarker = L.marker([y * height, x * width], { icon: entranceIcon(unit.houseNumber), draggable: editorMode, keyboard: true });
           entranceMarker.on("dragend", () => {
@@ -281,7 +284,8 @@ export function MapCanvas({ project, visible, selection, focusTarget, onSelect, 
             if (geometry?.type === "Point") onEntranceMoved(building.id, unit.id, entranceIndex, geometry);
           });
           entranceMarker.addTo(layers);
-        }));
+          });
+        });
       });
     }
   }, [focusTarget, selection, drawKind, editorMode, onEntranceMoved, onGeometryEdited, onSelect, postalCodeMinZoom, project, visible, visibleEntranceUnit, zoom]);
@@ -378,4 +382,3 @@ function darken(hex: string): string {
   const channel = (shift: number) => Math.round(((value >> shift) & 0xff) * 0.75).toString(16).padStart(2, "0");
   return `#${channel(16)}${channel(8)}${channel(0)}`;
 }
-

@@ -76,4 +76,3 @@ async function fileAtPath(root: FileSystemDirectoryHandle, path: string): Promis
   for (const piece of pieces.slice(0, -1)) directory = await directory.getDirectoryHandle(piece);
   return (await directory.getFileHandle(pieces.at(-1)!)).getFile();
 }
-

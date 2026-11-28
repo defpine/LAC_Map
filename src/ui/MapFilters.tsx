@@ -22,4 +22,3 @@ export function MapFilters({ visible, setVisible }: { visible: Visibility; setVi
     </label>;
   })}</div>;
 }
-

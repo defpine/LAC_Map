@@ -33,4 +33,3 @@ for (const icon of icons.images) {
 }
 await writeFile(path.join(target, '.nojekyll'), '');
 console.log('Viewer JSON, map, tiles and fonts prepared.');
-

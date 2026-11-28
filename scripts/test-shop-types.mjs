@@ -12,4 +12,3 @@ for (const type of types) {
   assert.equal(schemas.markersFileSchema.parse({ markers: [marker] }).markers[0].shopType, type);
 }
 console.log('New shop types accepted for shops and markers.');
-

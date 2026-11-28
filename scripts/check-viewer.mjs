@@ -36,4 +36,3 @@ if (image.tileDirectory) for (let level = 0; level <= 5; level++) {
 for (const name of ['geography','buildings','institutions','shops','npcs','facilities']) JSON.parse(await readFile(path.join(root, `Data/${name}.json`), 'utf8'));
 assert(!(await readdir(root)).includes('Backup'));
 console.log(`Viewer artifact checks passed; ${tiles} tiles, JSON and asset references verified; no Editor imports.`);
-

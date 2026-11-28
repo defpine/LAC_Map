@@ -5,4 +5,3 @@ export function buildingDetails(project: MapProject, building: Building) {
     detail.id === building.entityRef || ("location" in detail && detail.location?.type === "building" && detail.location.buildingRef === building.id),
   );
 }
-

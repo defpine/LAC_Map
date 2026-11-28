@@ -10,6 +10,7 @@ import { MapCanvas, type DrawKind, type DrawnGeometry, type SelectedFeature, typ
 import { PopupBanner } from "./PopupBanner";
 import { buildingDetails } from "../domain/buildingDetails";
 import { MapFilters } from "./MapFilters";
+import { supportsBuildingUnits } from "../domain/buildingUnits";
 
 const MAX_HISTORY_ENTRIES = 100;
 type DetailKind = "institution" | "shop" | "npc" | "facility";
@@ -250,6 +251,18 @@ export function App() {
     if (selection?.kind !== "building" || selection.feature.id !== visibleEntranceUnit?.buildingId) setVisibleEntranceUnit(null);
   }, [selection?.kind, selection?.feature.id, visibleEntranceUnit?.buildingId]);
   const createFeature = useCallback((kind: DrawKind, geometry: DrawnGeometry) => {
+    if (kind === "unitArea" && geometry.type === "Polygon" && entranceTarget) {
+      const currentBuilding = projectRef.current.buildings.find((building) => building.id === entranceTarget.buildingId);
+      if (!currentBuilding) return;
+      const units = currentBuilding.units?.map((unit) => unit.id === entranceTarget.unitId ? { ...unit, geometry } : unit);
+      const updatedBuilding: Building = { ...currentBuilding, units };
+      commitProject((current) => ({ ...current, buildings: current.buildings.map((building) => building.id === updatedBuilding.id ? updatedBuilding : building) }));
+      setSelection({ kind: "building", feature: updatedBuilding });
+      setDirty(true);
+      setDrawKind(null);
+      setEntranceTarget(null);
+      return;
+    }
     if (kind === "entrance" && geometry.type === "Point" && entranceTarget) {
       const currentBuilding = projectRef.current.buildings.find((building) => building.id === entranceTarget.buildingId);
       if (!currentBuilding) return;
@@ -407,8 +420,8 @@ export function App() {
     setVisibleEntranceUnit({ buildingId: building.id, unitId: unit.id });
     setDirty(true);
   };
-  const updateResidenceUnit = (building: Building, unitId: string, houseNumber: string) => {
-    const units = building.units?.map((unit) => unit.id === unitId ? { ...unit, houseNumber } : unit) ?? [];
+  const updateResidenceUnit = (building: Building, unitId: string, changes: Pick<ResidenceUnit, "houseNumber" | "description">) => {
+    const units = building.units?.map((unit) => unit.id === unitId ? { ...unit, ...changes } : unit) ?? [];
     commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === building.id ? { ...item, units } : item) }));
     setSelection({ kind: "building", feature: { ...building, units } });
     setDirty(true);
@@ -422,6 +435,12 @@ export function App() {
   };
   const deleteEntrance = (building: Building, unitId: string, entranceIndex: number) => {
     const units = building.units?.map((unit) => unit.id !== unitId ? unit : { ...unit, entrances: unit.entrances.filter((_, index) => index !== entranceIndex) }) ?? [];
+    commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === building.id ? { ...item, units } : item) }));
+    setSelection({ kind: "building", feature: { ...building, units } });
+    setDirty(true);
+  };
+  const deleteUnitArea = (building: Building, unitId: string) => {
+    const units = building.units?.map((unit) => unit.id === unitId ? { ...unit, geometry: undefined } : unit);
     commitProject((current) => ({ ...current, buildings: current.buildings.map((item) => item.id === building.id ? { ...item, units } : item) }));
     setSelection({ kind: "building", feature: { ...building, units } });
     setDirty(true);
@@ -471,10 +490,11 @@ export function App() {
             <h2>{editorMode ? selectedTitle : linkedSelectionDetail?.name || selection.feature.name || "이름 없음"}</h2>
             {!editorMode && selection.kind !== "road" && selection.kind !== "marker" && selection.feature.description && <p>{selection.feature.description}</p>}
             {editorMode && <p className="feature-id">{selection.feature.id}</p>}
-            {!editorMode && selection.kind === "building" && selection.feature.type === "residence" && <ViewerResidenceUnits building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} />}
+            {!editorMode && selection.kind === "building" && supportsBuildingUnits(selection.feature) && <ViewerResidenceUnits building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} />}
             {!editorMode && selection.kind === "building" && <ViewerBuildingInfo building={selection.feature} />}
             {!editorMode && linkedSelectionDetails.map(detail => <DetailPopupContent key={detail.id} detail={detail} />)}
             {editorMode && !drawKind && <p className="geometry-hint">{selection.kind === "marker" ? "마커를 끌어 위치를 바꿀 수 있습니다." : "표시된 꼭짓점을 끌거나 눌러 경계를 편집할 수 있습니다."}</p>}
+            {editorMode && drawKind === "unitArea" && <p className="geometry-hint">지도에서 영역의 꼭짓점을 차례로 클릭하고 마지막 점을 두 번 눌러 완성하세요. <button type="button" onClick={() => { setDrawKind(null); setEntranceTarget(null); }}>그리기 취소</button></p>}
             {selection.kind === "road" && <p>폭: {selection.feature.width}px</p>}
             {editorMode && <div className="inspector-fields">
               <label>이름<input value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder="이름 없음" /></label>
@@ -497,7 +517,7 @@ export function App() {
               {(selection.kind === "building" || selection.kind === "marker") && <><label>전용 아이콘<select value={draftIconRef} onChange={(event) => setDraftIconRef(event.target.value)}><option value="">없음 · 기본 색상 사용</option>{(project.icons ?? []).map((icon) => <option key={icon.id} value={icon.id}>{icon.originalFileName}</option>)}</select></label><label>아이콘 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file); }} /></label><small>PNG, JPG, WebP · 최대 10MB · 애니메이션 제외</small></>}
               {selection.kind !== "road" && <><label>미리보기 배너<select value={draftBannerRef} onChange={(event) => setDraftBannerRef(event.target.value)}><option value="">없음</option>{(project.icons ?? []).map((image) => <option key={image.id} value={image.id}>{image.originalFileName}</option>)}</select></label><label>배너 이미지 등록<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void registerIcon(file, "banner"); }} /></label><small>권장 800 × 450px · 16:9 · PNG, JPG, WebP · 최대 10MB</small></>}
               <div className="inspector-actions"><button className="save-property" onClick={saveSelectedProperties}>속성 Save</button><button className="delete-property" onClick={() => setDeleteConfirm(true)}>Delete</button></div>
-              {selection.kind === "building" && selection.feature.type === "residence" && <ResidenceUnitsEditor building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} onAddUnit={addResidenceUnit} onUpdateUnit={updateResidenceUnit} onDeleteUnit={deleteResidenceUnit} onAddEntrance={(unitId) => { setVisibleEntranceUnit({ buildingId: selection.feature.id, unitId }); setEntranceTarget({ buildingId: selection.feature.id, unitId }); setDrawKind("entrance"); }} onDeleteEntrance={deleteEntrance} />}
+              {selection.kind === "building" && supportsBuildingUnits(selection.feature) && <ResidenceUnitsEditor building={selection.feature} activeUnitId={visibleEntranceUnit?.buildingId === selection.feature.id ? visibleEntranceUnit.unitId : null} onSelectUnit={(unitId) => setVisibleEntranceUnit((current) => current?.buildingId === selection.feature.id && current.unitId === unitId ? null : { buildingId: selection.feature.id, unitId })} onAddUnit={addResidenceUnit} onUpdateUnit={updateResidenceUnit} onDeleteUnit={deleteResidenceUnit} onAddEntrance={(unitId) => { setVisibleEntranceUnit({ buildingId: selection.feature.id, unitId }); setEntranceTarget({ buildingId: selection.feature.id, unitId }); setDrawKind("entrance"); }} onDeleteEntrance={deleteEntrance} onDrawArea={(unitId) => { setVisibleEntranceUnit({ buildingId: selection.feature.id, unitId }); setEntranceTarget({ buildingId: selection.feature.id, unitId }); setDrawKind("unitArea"); }} onDeleteArea={deleteUnitArea} />}
             </div>}
           </aside>}
           {deleteConfirm && selection && <aside className="confirm-card" role="dialog" aria-modal="true" aria-label="객체 삭제 확인">
@@ -552,13 +572,13 @@ function TextListEditor({ title, values, onChange, placeholder }: { title: strin
   return <section className="list-editor"><strong>{title}</strong>{values.map((value, index) => <div key={index}><input value={value} onChange={(event) => update(index, event.target.value)} placeholder={placeholder} /><button type="button" onClick={() => onChange(values.filter((_, itemIndex) => itemIndex !== index))}>×</button></div>)}<button type="button" className="subtle-button" onClick={() => onChange([...values, ""])}>+ 추가</button></section>;
 }
 
-function ResidenceUnitsEditor({ building, activeUnitId, onSelectUnit, onAddUnit, onUpdateUnit, onDeleteUnit, onAddEntrance, onDeleteEntrance }: { building: Building; activeUnitId: string | null; onSelectUnit: (unitId: string) => void; onAddUnit: (building: Building) => void; onUpdateUnit: (building: Building, unitId: string, houseNumber: string) => void; onDeleteUnit: (building: Building, unitId: string) => void; onAddEntrance: (unitId: string) => void; onDeleteEntrance: (building: Building, unitId: string, entranceIndex: number) => void }) {
-  return <section className="units-editor"><strong>주거 유닛</strong>{(building.units ?? []).map((unit) => <div className="unit-card" key={unit.id}><small>{unit.id}</small><label>houseNumber<input value={unit.houseNumber ?? ""} onChange={(event) => onUpdateUnit(building, unit.id, event.target.value)} placeholder="예: 101" /></label><div className="unit-entrances"><span>출입구 {unit.entrances.length}개</span><button type="button" className={activeUnitId === unit.id ? "subtle-button selected" : "subtle-button"} onClick={() => onSelectUnit(unit.id)}>{activeUnitId === unit.id ? "출입구 숨기기" : "출입구 보기"}</button><button type="button" className="subtle-button" onClick={() => onAddEntrance(unit.id)}>출입구 추가</button>{unit.entrances.map((_, index) => <button type="button" className="delete-property" key={index} onClick={() => onDeleteEntrance(building, unit.id, index)}>출입구 {index + 1} 삭제</button>)}</div><button type="button" className="delete-property" onClick={() => onDeleteUnit(building, unit.id)}>유닛 삭제</button></div>)}<button type="button" className="subtle-button" onClick={() => onAddUnit(building)}>+ 유닛 추가</button></section>;
+function ResidenceUnitsEditor({ building, activeUnitId, onSelectUnit, onAddUnit, onUpdateUnit, onDeleteUnit, onAddEntrance, onDeleteEntrance, onDrawArea, onDeleteArea }: { building: Building; activeUnitId: string | null; onSelectUnit: (unitId: string) => void; onAddUnit: (building: Building) => void; onUpdateUnit: (building: Building, unitId: string, changes: Pick<ResidenceUnit, "houseNumber" | "description">) => void; onDeleteUnit: (building: Building, unitId: string) => void; onAddEntrance: (unitId: string) => void; onDeleteEntrance: (building: Building, unitId: string, entranceIndex: number) => void; onDrawArea: (unitId: string) => void; onDeleteArea: (building: Building, unitId: string) => void }) {
+  return <section className="units-editor"><strong>주거 유닛</strong>{(building.units ?? []).map((unit) => <div className="unit-card" key={unit.id}><small>{unit.id}</small><label>houseNumber<input value={unit.houseNumber ?? ""} onChange={(event) => onUpdateUnit(building, unit.id, { houseNumber: event.target.value })} placeholder="예: 101" /></label><label>번지 설명<textarea value={unit.description ?? ""} onChange={(event) => onUpdateUnit(building, unit.id, { description: event.target.value })} placeholder="이 번지에 대한 설명" /></label><div className="unit-entrances"><span>출입구 {unit.entrances.length}개 · 영역 {unit.geometry ? "있음" : "없음"}</span><button type="button" className="subtle-button" onClick={() => onDrawArea(unit.id)}>{unit.geometry ? "영역 다시 그리기" : "영역 그리기"}</button>{unit.geometry && <button type="button" className="delete-property" onClick={() => onDeleteArea(building, unit.id)}>영역 삭제</button>}<button type="button" className={activeUnitId === unit.id ? "subtle-button selected" : "subtle-button"} onClick={() => onSelectUnit(unit.id)}>{activeUnitId === unit.id ? "영역·출입구 숨기기" : "영역·출입구 보기"}</button><button type="button" className="subtle-button" onClick={() => onAddEntrance(unit.id)}>출입구 추가</button>{unit.entrances.map((_, index) => <button type="button" className="delete-property" key={index} onClick={() => onDeleteEntrance(building, unit.id, index)}>출입구 {index + 1} 삭제</button>)}</div><button type="button" className="delete-property" onClick={() => onDeleteUnit(building, unit.id)}>유닛 삭제</button></div>)}<button type="button" className="subtle-button" onClick={() => onAddUnit(building)}>+ 유닛 추가</button></section>;
 }
 
 function ViewerResidenceUnits({ building, activeUnitId, onSelectUnit }: { building: Building; activeUnitId: string | null; onSelectUnit: (unitId: string) => void }) {
   const units = building.units ?? [];
-  return <section className="viewer-units"><strong>주거 유닛</strong>{units.length === 0 ? <p>등록된 유닛이 없습니다.</p> : <><p>유닛을 선택하면 해당 출입구만 지도에 표시됩니다.</p><div>{units.map((unit) => <button type="button" key={unit.id} className={activeUnitId === unit.id ? "active" : ""} onClick={() => onSelectUnit(unit.id)}>{unit.houseNumber?.trim() || unit.id} <small>출입구 {unit.entrances.length}</small></button>)}</div></>}</section>;
+  return <section className="viewer-units"><strong>주거 유닛</strong>{units.length === 0 ? <p>등록된 유닛이 없습니다.</p> : <><p>유닛을 선택하면 해당 영역과 출입구가 지도에 표시됩니다.</p><div>{units.map((unit) => <button type="button" key={unit.id} className={activeUnitId === unit.id ? "active" : ""} onClick={() => onSelectUnit(unit.id)}>{unit.houseNumber?.trim() || unit.id} <small>출입구 {unit.entrances.length}</small></button>)}</div>{units.find((unit) => unit.id === activeUnitId)?.description && <p style={{ whiteSpace: "pre-wrap" }}>{units.find((unit) => unit.id === activeUnitId)?.description}</p>}</>}</section>;
 }
 
 function ViewerBuildingInfo({ building }: { building: Building }) {
@@ -566,7 +586,7 @@ function ViewerBuildingInfo({ building }: { building: Building }) {
   if (building.postalCode) details.push(`우편번호 ${building.postalCode}`);
   if (building.isPurchasable) details.push("구매 가능");
   if (building.isBurglaryTarget) details.push("절도 대상");
-  if (building.type === "residence") details.push(`유닛 ${(building.units ?? []).length}개`);
+  if (supportsBuildingUnits(building)) details.push(`유닛 ${(building.units ?? []).length}개`);
   return details.length > 0 ? <div className="viewer-building-info">{details.map((detail) => <span key={detail}>{detail}</span>)}</div> : null;
 }
 
@@ -640,7 +660,7 @@ function nextUnitId(buildings: readonly Building[]): string {
 }
 
 function drawLabel(kind: DrawKind): string {
-  return ({ marker: "마커", entrance: "출입구", building: "건물", road: "도로", terrain: "지형", zone: "구역" })[kind];
+  return ({ marker: "마커", entrance: "출입구", unitArea: "번지 영역", building: "건물", road: "도로", terrain: "지형", zone: "구역" })[kind];
 }
 
 function removeFeature(project: MapProject, kind: SelectedFeature["kind"], id: string): MapProject {
@@ -756,4 +776,3 @@ function validateResidenceEntrances(project: MapProject): string | null {
   const invalid = project.buildings.find((building) => building.type === "residence" && building.isBurglaryTarget && (!(building.units?.length) || building.units.some((unit) => unit.entrances.length === 0)));
   return invalid ? `절도 대상 주거 건물 “${invalid.name ?? invalid.id}”의 모든 유닛에는 출입구가 최소 1개 필요합니다.` : null;
 }
-

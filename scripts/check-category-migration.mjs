@@ -23,4 +23,3 @@ assert.deepEqual(schemas.facilitiesFileSchema.parse({ facilities: [{ id: 'legacy
 assert.equal(schemas.facilitiesFileSchema.parse(facilities).facilities.length, facilities.facilities.length);
 for (const marker of markers.markers.filter(item => item.entityRef?.startsWith('facility_'))) assert.ok(facilities.facilities.some(item => item.id === marker.entityRef));
 console.log('Category migration and legacy compatibility checks passed.');
-

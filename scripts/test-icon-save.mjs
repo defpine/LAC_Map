@@ -10,6 +10,7 @@ function fixture(failName) {
   const names = ['geography', 'buildings', 'markers', 'institutions', 'shops', 'npcs', 'facilities', 'images'];
   const files = new Map(names.map(name => [`${name}.json`, `original:${name}`]));
   const icons = new Map();
+  const banners = new Map();
   let failed = false;
   const dir = (storage) => ({
     async getFileHandle(name, options) {
@@ -25,10 +26,9 @@ function fixture(failName) {
     },
     async removeEntry(name) { storage.delete(name); },
   });
-  const iconDir = dir(icons);
-  const root = { async getDirectoryHandle(name) { if (name === 'Data') return dir(files); return { async getDirectoryHandle() { return { ...iconDir, async getDirectoryHandle() { return iconDir; } }; } }; } };
+  const root = { async getDirectoryHandle(name) { if (name === 'Data') return dir(files); return { async getDirectoryHandle() { return { async getDirectoryHandle(kind) { return dir(kind === 'icons' ? icons : banners); } }; } }; } };
   const project = { terrain: [], zones: [], roads: [], buildings: [], markers: [], institutions: [], shops: [], npcs: [], facilities: [], icons: [{ id: 'image_000001', originalFileName: 'icon.png', filePath: 'Assets/images/icons/image_000001.png', format: 'png', fileSize: 4, sha256: 'a'.repeat(64), pendingFile: new Blob(['test']) }] };
-  return { root, files, icons, project };
+  return { root, files, icons, banners, project };
 }
 
 const success = fixture();
@@ -36,7 +36,9 @@ await saveProjectData(success.root, success.project);
 assert.equal(success.icons.size, 1);
 assert.equal(JSON.parse(success.files.get('images.json')).images[0].id, 'image_000001');
 const failure = fixture('markers.json');
+failure.project.icons.push({ id: 'image_000002', originalFileName: 'banner.png', filePath: 'Assets/images/banners/image_000002.png', format: 'png', fileSize: 6, sha256: 'b'.repeat(64), pendingFile: new Blob(['banner']) });
 await assert.rejects(saveProjectData(failure.root, failure.project));
 assert.equal(failure.icons.size, 0);
+assert.equal(failure.banners.size, 0);
 for (const [name, value] of failure.files) assert.equal(value, `original:${name.replace('.json', '')}`);
 console.log('Icon save and rollback checks passed.');
