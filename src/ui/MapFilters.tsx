@@ -7,7 +7,10 @@ const filters = [
 ] as const;
 
 export function MapFilters({ visible, setVisible }: { visible: Visibility; setVisible: Dispatch<SetStateAction<Visibility>> }) {
-  return <div className="map-filters">{filters.map(([key, label]) => {
+  const setAll = (enabled: boolean) => setVisible(current => Object.fromEntries(
+    Object.entries(current).map(([key, value]) => [key, typeof value === "boolean" ? enabled : Object.fromEntries(Object.keys(value).map(type => [type, enabled]))]),
+  ) as Visibility);
+  return <div className="map-filters"><div className="filter-all-actions"><button type="button" onClick={() => setAll(true)}>모두 켜기</button><button type="button" onClick={() => setAll(false)}>모두 끄기</button></div>{filters.map(([key, label]) => {
     const value = visible[key];
     const checked = typeof value === "boolean" ? value : Object.values(value).every(Boolean);
     return <label className="filter-row" key={key}>

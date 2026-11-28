@@ -467,7 +467,7 @@ export function App() {
         <aside className={`filter-sidebar ${sidebarOpen ? "open" : "collapsed"}`}>
           <button className="sidebar-toggle" onClick={() => setSidebarOpen((value) => !value)} aria-label="필터 열기 또는 닫기">☰</button>
           {sidebarOpen && <div className="filter-content">
-            <div className="filter-header"><h1>필터</h1><button onClick={() => setVisibility(allVisible())}>전체 표시</button></div>
+            <div className="filter-header"><h1>필터</h1></div>
             <MapFilters visible={visibility} setVisible={setVisibility} />
             {editorMode && <div className="add-menu">
               <p>객체 추가</p>
@@ -618,10 +618,6 @@ function FilterGroup({ title, entries, value, onChange, onToggleAll }: { title: 
   const [open, setOpen] = useState(false);
   const allEnabled = entries.length > 0 && entries.every((entry) => value[entry.type]);
   return <section className={`filter-group ${open ? "open" : ""}`}><div className="filter-group-header"><label><input type="checkbox" checked={allEnabled} onChange={() => onToggleAll(!allEnabled)} /><span>전체</span></label><button type="button" onClick={() => setOpen((current) => !current)} aria-expanded={open}>{title}<span>{open ? "−" : "+"}</span></button></div>{open && <div className="filter-group-items">{entries.map((entry) => <label className="filter-row" key={entry.type}><input type="checkbox" checked={value[entry.type]} onChange={() => onChange(entry.type)} /><span>{entry.label}</span><small>{entry.count}</small></label>)}</div>}</section>;
-}
-
-function allVisible(): Visibility {
-  return { terrain: { mountain: true, beach: true, lake: true, city: true }, zone: true, road: true, name: true, postalCode: true, building: { institution: true, shop: true, residence: true, burglary: true, landmark: true, terminal: true, content: true }, marker: { institution: true, shop: true, npc: true, garage: true, landmark: true, content: true, terminal: true, gas_station: true } };
 }
 
 function typedFilterEntries(project: MapProject, kind: "terrain" | "building" | "marker"): { type: string; label: string; count: number }[] {
